@@ -2,6 +2,8 @@ Changelog
 =========
 
 ## Unreleased
+
+## 4.0.0 - 2022-03-25
 - Use changelog instead of `VERSIONS.md`
 - Fork for `vysokeskoly`
 - Normalize composer
