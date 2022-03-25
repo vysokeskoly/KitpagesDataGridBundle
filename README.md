@@ -1,6 +1,8 @@
 KitpagesDataGridBundle
 ========================
 
+[![PHP - Checks](https://github.com/vysokeskoly/KitpagesDataGridBundle/actions/workflows/php-checks.yaml/badge.svg)](https://github.com/vysokeskoly/KitpagesDataGridBundle/actions/workflows/php-checks.yaml)
+
 This Symfony Bundle is a simple datagrid bundle. It aims to be easy to use and extensible.
 
 ## Warning version 3
