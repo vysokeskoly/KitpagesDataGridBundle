@@ -1,10 +1,10 @@
 <?php
-namespace Kitpages\DataGridBundle\Tests\Grid;
+namespace Kitpages\DataGridBundle\Grid;
 
 use Kitpages\DataGridBundle\Grid\Grid;
 use Kitpages\DataGridBundle\Grid\Field;
 use Symfony\Component\EventDispatcher\EventDispatcher;
-use Kitpages\DataGridBundle\Tests\Grid\ConversionSubscriber;
+use Kitpages\DataGridBundle\Grid\ConversionSubscriber;
 use PHPUnit\Framework\TestCase;
 
 

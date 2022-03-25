@@ -4,6 +4,7 @@ Authors
 Core team
 ---------
 Philippe Le Van (twitter : @plv, github: philippe-levan)
+Petr Chromec (github: vysokeskoly)
 
 Contributors
 ------------

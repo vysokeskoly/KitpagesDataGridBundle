@@ -1,5 +1,5 @@
 <?php
-namespace Kitpages\DataGridBundle\Tests\TestEntities;
+namespace Kitpages\DataGridBundle\TestEntities;
 
 
 use Doctrine\Common\Collections\ArrayCollection;

@@ -1,5 +1,5 @@
 <?php
-namespace Kitpages\DataGridBundle\Tests\Grid;
+namespace Kitpages\DataGridBundle\Grid;
 
 use Doctrine\ORM\EntityManager;
 use Kitpages\DataGridBundle\Grid\Field;
@@ -9,7 +9,7 @@ use Kitpages\DataGridBundle\Paginator\PaginatorConfig;
 use Kitpages\DataGridBundle\Grid\GridConfig;
 use Kitpages\DataGridBundle\Grid\GridManager;
 use Kitpages\DataGridBundle\Paginator\PaginatorManager;
-use Kitpages\DataGridBundle\Tests\BundleOrmTestCase;
+use Kitpages\DataGridBundle\BundleOrmTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**

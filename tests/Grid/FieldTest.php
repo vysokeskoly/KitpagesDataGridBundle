@@ -1,5 +1,5 @@
 <?php
-namespace Kitpages\DataGridBundle\Tests\Grid;
+namespace Kitpages\DataGridBundle\Grid;
 
 use PHPUnit\Framework\TestCase;
 use Kitpages\DataGridBundle\Grid\Field;

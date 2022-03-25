@@ -1,5 +1,5 @@
 <?php
-namespace Kitpages\DataGridBundle\Tests\Config;
+namespace Kitpages\DataGridBundle\Config;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

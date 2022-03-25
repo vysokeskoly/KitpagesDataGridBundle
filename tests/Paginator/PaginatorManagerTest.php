@@ -1,9 +1,9 @@
 <?php
-namespace Kitpages\DataGridBundle\Tests\Paginator;
+namespace Kitpages\DataGridBundle\Paginator;
 
 use Kitpages\DataGridBundle\Paginator\PaginatorManager;
 use Kitpages\DataGridBundle\Paginator\PaginatorConfig;
-use Kitpages\DataGridBundle\Tests\BundleOrmTestCase;
+use Kitpages\DataGridBundle\BundleOrmTestCase;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 

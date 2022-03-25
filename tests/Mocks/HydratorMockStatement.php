@@ -1,6 +1,6 @@
 <?php
 
-namespace Kitpages\DataGridBundle\Tests\Mocks;
+namespace Kitpages\DataGridBundle\Mocks;
 
 /**
  * This class is a mock of the Statement interface that can be passed in to the Hydrator

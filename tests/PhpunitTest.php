@@ -1,5 +1,5 @@
 <?php
-namespace Kitpages\DataGridBundle\Tests;
+namespace Kitpages\DataGridBundle;
 use PHPUnit\Framework\TestCase;
 class PhpunitTest extends TestCase
 {

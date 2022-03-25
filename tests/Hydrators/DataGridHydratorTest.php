@@ -4,8 +4,8 @@ namespace Doctrine\Tests\ORM\Hydration;
 
 use Doctrine\ORM\Query\ResultSetMapping;
 use Kitpages\DataGridBundle\Hydrators\DataGridHydrator;
-use Kitpages\DataGridBundle\Tests\BundleOrmTestCase;
-use Kitpages\DataGridBundle\Tests\Mocks\HydratorMockStatement;
+use Kitpages\DataGridBundle\BundleOrmTestCase;
+use Kitpages\DataGridBundle\Mocks\HydratorMockStatement;
 
 class ScalarHydratorTest extends BundleOrmTestCase
 {

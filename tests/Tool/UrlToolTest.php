@@ -1,5 +1,5 @@
 <?php
-namespace Kitpages\DataGridBundle\Tests\Tool;
+namespace Kitpages\DataGridBundle\Tool;
 
 use Kitpages\DataGridBundle\Tool\UrlTool;
 use PHPUnit\Framework\TestCase;

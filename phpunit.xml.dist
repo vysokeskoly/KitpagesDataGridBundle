@@ -1,25 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- http://phpunit.de/manual/current/en/appendixes.configuration.html -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" backupGlobals="false" backupStaticAttributes="false"
+         colors="true" convertErrorsToExceptions="true" convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true" processIsolation="false" stopOnFailure="false"
+         bootstrap="vendor/autoload.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+    <coverage includeUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
 
-<phpunit bootstrap="./Tests/bootstrap.php" colors="true">
+        <exclude>
+            <directory>src/DependencyInjection</directory>
+            <directory>src/Resources</directory>
+            <directory suffix="Bundle.php">src/*Bundle</directory>
+        </exclude>
+
+        <report>
+            <clover outputFile="./reports/clover.xml"/>
+            <html outputDirectory="./reports" lowUpperBound="35" highLowerBound="90"/>
+        </report>
+    </coverage>
 
     <testsuites>
-        <testsuite name="KitpagesDataGridBundle test suite">
-            <directory suffix="Test.php">./Tests</directory>
+        <testsuite name="KitpagesDataGridBundle test Suite">
+            <directory suffix="Test.php">./tests</directory>
         </testsuite>
     </testsuites>
-    <php>
-        <server name="KERNEL_DIR" value="./Tests/app/" />
-        <server name="KERNEL_CLASS" value="Kitpages\DataGridBundle\Tests\AppKernel" />
-    </php>
 
-    <filter>
-        <whitelist>
-            <directory>./</directory>
-            <exclude>
-                <directory>./Resources</directory>
-                <directory>./Tests</directory>
-                <directory>./vendor</directory>
-            </exclude>
-        </whitelist>
-    </filter>
+    <logging>
+        <junit outputFile="./reports/junit.xml"/>
+    </logging>
+
+    <php>
+        <!-- E_ALL = 30719 -->
+        <ini name="error_reporting" value="30719"/>
+        <server name="KERNEL_DIR" value="./tests/app/" />
+        <server name="KERNEL_CLASS" value="Kitpages\DataGridBundle\AppKernel" />
+    </php>
 </phpunit>
