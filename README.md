@@ -1,9 +1,7 @@
 KitpagesDataGridBundle
 ========================
 
-[![Build Status](https://travis-ci.org/kitpages/KitpagesDataGridBundle.svg?branch=master)](https://travis-ci.org/kitpages/KitpagesDataGridBundle)
-
-[![SensioLabsInsight](https://insight.sensiolabs.com/projects/df09ed10-4c61-4b1d-8cf7-5206901493c4/small.png)](https://insight.sensiolabs.com/projects/df09ed10-4c61-4b1d-8cf7-5206901493c4)
+[![PHP - Checks](https://github.com/vysokeskoly/KitpagesDataGridBundle/actions/workflows/php-checks.yaml/badge.svg)](https://github.com/vysokeskoly/KitpagesDataGridBundle/actions/workflows/php-checks.yaml)
 
 This Symfony Bundle is a simple datagrid bundle. It aims to be easy to use and extensible.
 
@@ -24,13 +22,7 @@ There are BC Breaks between version 1 and version 2.
 Actual state
 ============
 
-see VERSIONS.md
-
-* v3.x is in beta, no change in funcionnality
-* v2.5.x is following version 2.5.x of doctrine
-* v2.4.x is following version 2.4.x of doctrine
-* v2.x is stable and production ready
-* v1.x is stable, production ready
+see CHANGELOG.md
 
 Features
 ========

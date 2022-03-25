@@ -1,6 +1,7 @@
+/composer.lock
+/vendor
+/reports
+.phpunit.result.cache
 phpunit.xml
-Tests/autoload.php
-Tests/app/cache
-Tests/cache
-vendor/*
-composer.lock
+
+/var
