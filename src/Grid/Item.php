@@ -1,16 +1,18 @@
-<?php
-namespace Kitpages\DataGridBundle\Grid;
+<?php declare(strict_types=1);
 
+namespace Kitpages\DataGridBundle\Grid;
 
 class Item
 {
+    /** @var mixed */
     protected $entity;
+    /** @var mixed */
     protected $row;
 
     /**
      * @param mixed $entity
      */
-    public function setEntity($entity)
+    public function setEntity($entity): void
     {
         $this->entity = $entity;
     }
@@ -26,7 +28,7 @@ class Item
     /**
      * @param mixed $row
      */
-    public function setRow($row)
+    public function setRow($row): void
     {
         $this->row = $row;
     }
@@ -38,6 +40,4 @@ class Item
     {
         return $this->row;
     }
-
-
-} 
+}

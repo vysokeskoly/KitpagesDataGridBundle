@@ -1,131 +1,93 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Kitpages\DataGridBundle\Paginator;
 
 use Doctrine\ORM\QueryBuilder;
 
 class PaginatorConfig
 {
-    /** @var string */
-    protected $name = 'paginator';
+    protected string $name = 'paginator';
+    protected ?QueryBuilder $queryBuilder = null;
+    protected ?int $itemCountInPage = null;
+    protected ?int $visiblePageCountInPaginator = null;
+    protected ?string $countFieldName = null;
 
-    /** @var QueryBuilder|null */
-    protected $queryBuilder = null;
-
-    /** @var int */
-    protected $itemCountInPage = null;
-
-    /** @var int */
-    protected $visiblePageCountInPaginator = null;
-
-    /** @var string */
-    protected $countFieldName = null;
-
-    /**
-     * @param string $key
-     *
-     * @return string
-     */
-    public function getRequestQueryName($key)
+    public function getRequestQueryName(string $key): string
     {
         return 'kitdg_paginator_' . $this->getName() . '_' . $key;
     }
 
     /**
-     * @param int $itemCountInPage
-     *
      * @return PaginatorConfig Fluent interface
      */
-    public function setItemCountInPage($itemCountInPage)
+    public function setItemCountInPage(int $itemCountInPage): self
     {
         $this->itemCountInPage = $itemCountInPage;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getItemCountInPage()
+    public function getItemCountInPage(): ?int
     {
         return $this->itemCountInPage;
     }
 
     /**
-     * @param string $name
-     *
      * @return PaginatorConfig Fluent interface
      */
-    public function setName($name)
+    public function setName(string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * @param \Doctrine\ORM\QueryBuilder|null $queryBuilder
-     *
      * @return PaginatorConfig Fluent interface
      */
-    public function setQueryBuilder(QueryBuilder $queryBuilder)
+    public function setQueryBuilder(QueryBuilder $queryBuilder): self
     {
         $this->queryBuilder = $queryBuilder;
 
         return $this;
     }
 
-    /**
-     * @return \Doctrine\ORM\QueryBuilder|null
-     */
-    public function getQueryBuilder()
+    public function getQueryBuilder(): ?\Doctrine\ORM\QueryBuilder
     {
         return $this->queryBuilder;
     }
 
     /**
-     * @param int $visiblePageCountInPaginator
-     *
      * @return PaginatorConfig Fluent interface
      */
-    public function setVisiblePageCountInPaginator($visiblePageCountInPaginator)
+    public function setVisiblePageCountInPaginator(int $visiblePageCountInPaginator): self
     {
         $this->visiblePageCountInPaginator = $visiblePageCountInPaginator;
 
         return $this;
     }
 
-    /**
-     * @return int
-     */
-    public function getVisiblePageCountInPaginator()
+    public function getVisiblePageCountInPaginator(): ?int
     {
         return $this->visiblePageCountInPaginator;
     }
 
     /**
-     * @param string $countFieldName
-     *
      * @return PaginatorConfig Fluent interface
      */
-    public function setCountFieldName($countFieldName)
+    public function setCountFieldName(string $countFieldName): self
     {
         $this->countFieldName = $countFieldName;
 
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getCountFieldName()
+    public function getCountFieldName(): string
     {
         return $this->countFieldName;
     }

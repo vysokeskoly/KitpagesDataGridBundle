@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Kitpages\DataGridBundle;
 
@@ -9,28 +9,18 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Input\ArrayInput;
 
-class BundleOrmTestCase
-    extends KernelTestCase
+class BundleOrmTestCase extends KernelTestCase
 {
-    /**
-     * @var EntityManager
-     */
-    protected $em;
-    /**
-     * @var
-     */
-    protected $pdo;
+    protected EntityManager $em;
+    protected \PDO $pdo;
 
-    /**
-     * @return \Doctrine\ORM\EntityManager
-     */
-    protected function createEntityManager()
+    protected function createEntityManager(): EntityManager
     {
         $kernel = self::bootKernel();
         $application = new Application($kernel);
         $application->setAutoExit(false);
         $application->run(new ArrayInput([
-            'doctrine:schema:drop',
+            0 => 'doctrine:schema:drop',
             '--force' => true,
         ]));
         $application->run(new ArrayInput([
@@ -44,23 +34,16 @@ class BundleOrmTestCase
         return $this->em;
     }
 
-    public function getConnection()
-    {
-        $pdo = $this->em->getConnection();
-
-        return $this->createDefaultDBConnection($pdo, ':memory:');
-    }
-
-    public function getEntityManager()
+    public function getEntityManager(): EntityManager
     {
         return $this->createEntityManager();
     }
 
     /**
-     * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\ORMException
      */
-    public function createTestEntities()
+    public function createTestEntities(): void
     {
         //    <node id="1" content="foobar" user="joe" created_at="2010-04-24 17:15:23" parent_id=""/>
         /*
@@ -81,8 +64,7 @@ class BundleOrmTestCase
          */
         $this->em->persist($nodeAssoc = (new NodeAssoc())
             ->setId(1)
-            ->setName('test assoc')
-        );
+            ->setName('test assoc'));
 
         $node1 = (new Node())
             ->setId(1)
@@ -143,22 +125,19 @@ class BundleOrmTestCase
             ->setId(8)
             ->setContent('Hello foo')
             ->setUser('foouser')
-            ->setCreatedAt(new \DateTime('2010-04-18 12:14:20'))
-        );
+            ->setCreatedAt(new \DateTime('2010-04-18 12:14:20')));
 
         $this->em->persist($node9 = (new Node())
             ->setId(9)
             ->setContent('I fös it!')
             ->setUser('foo')
-            ->setCreatedAt(new \DateTime('2010-04-19 12:14:20'))
-        );
+            ->setCreatedAt(new \DateTime('2010-04-19 12:14:20')));
 
         $this->em->persist($node10 = (new Node())
             ->setId(10)
             ->setContent('I like it!')
             ->setUser('bar')
-            ->setCreatedAt(new \DateTime('2010-04-20 12:14:20'))
-        );
+            ->setCreatedAt(new \DateTime('2010-04-20 12:14:20')));
 
         $this->em->persist($node11 = (new Node())
             ->setId(11)
@@ -166,8 +145,7 @@ class BundleOrmTestCase
             ->setUser('toto')
             ->setCreatedAt(new \DateTime('2010-04-21 12:14:20'))
             ->setMainNode($node1)
-            ->setAssoc($nodeAssoc)
-        );
+            ->setAssoc($nodeAssoc));
 
         //        <node id="7" content="I like it!" user="fös" created_at="2010-04-17 12:14:20" parent_id=""/>
 //    <node id="8" content="Hello foo" user="foouser" created_at="2010-04-18 12:14:20" parent_id=""/>
@@ -176,7 +154,5 @@ class BundleOrmTestCase
 //    <node id="11" assoc_id="1" content="I like it!" user="toto" created_at="2010-04-21 12:14:20" parent_id="" mainNodeId="1"/>
 
         $this->em->flush();
-
     }
-
 }

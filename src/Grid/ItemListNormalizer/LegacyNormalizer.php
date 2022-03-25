@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Created by levan on 03/07/14.
  */
@@ -8,21 +8,17 @@ namespace Kitpages\DataGridBundle\Grid\ItemListNormalizer;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 
-class LegacyNormalizer
-    implements NormalizerInterface
+class LegacyNormalizer implements NormalizerInterface
 {
-    /**
-     * @inheritdoc
-     */
-    public function normalize(Query $query, QueryBuilder $queryBuilder)
+    public function normalize(Query $query, QueryBuilder $queryBuilder): array
     {
         // execute the query
         $itemList = $query->getArrayResult();
 
         // normalize result (for request of type $queryBuilder->select("item, bp, item.id * 3 as titi"); )
-        $normalizedItemList = array();
+        $normalizedItemList = [];
         foreach ($itemList as $item) {
-            $normalizedItem = array();
+            $normalizedItem = [];
             foreach ($item as $key => $val) {
                 // hack : is_array is added according to this issue : https://github.com/kitpages/KitpagesDataGridBundle/issues/18
                 // can't reproduce this error...
@@ -36,7 +32,7 @@ class LegacyNormalizer
             }
             $normalizedItemList[] = $normalizedItem;
         }
+
         return $normalizedItemList;
     }
-
-} 
+}

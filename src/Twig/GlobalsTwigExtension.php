@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Kitpages\DataGridBundle\Twig;
 
@@ -7,12 +7,12 @@ use Twig\Extension\GlobalsInterface;
 
 class GlobalsTwigExtension extends AbstractExtension implements GlobalsInterface
 {
-    protected $gridParameterList;
-    protected $paginatorParameterList;
+    protected array $gridParameterList;
+    protected array $paginatorParameterList;
 
     public function __construct(
-        $gridParameterList,
-        $paginatorParameterList
+        array $gridParameterList,
+        array $paginatorParameterList
     ) {
         $this->gridParameterList = $gridParameterList;
         $this->paginatorParameterList = $paginatorParameterList;
@@ -21,20 +21,10 @@ class GlobalsTwigExtension extends AbstractExtension implements GlobalsInterface
     public function getGlobals(): array
     {
         return [
-            "kitpages_data_grid" => [
+            'kitpages_data_grid' => [
                 'grid' => $this->gridParameterList,
                 'paginator' => $this->paginatorParameterList,
             ],
         ];
-    }
-
-    /**
-     * Returns the name of the extension.
-     *
-     * @return string The extension name
-     */
-    public function getName()
-    {
-        return "kitpages_data_grid_globals_extension";
     }
 }

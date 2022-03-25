@@ -4,5 +4,4 @@ namespace Kitpages\DataGridBundle\Event;
 
 class AfterDisplayGridValueConversion extends DataGridEvent
 {
-
 }

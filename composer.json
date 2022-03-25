@@ -22,6 +22,7 @@
     "homepage": "https://github.com/vysokeskoly/KitpagesDataGridBundle",
     "require": {
         "php": "^7.4",
+        "ext-pdo": "*",
         "doctrine/doctrine-bundle": "~2.0",
         "doctrine/orm": "~2.5",
         "symfony/dependency-injection": "~5.0",
@@ -35,8 +36,8 @@
         "ergebnis/composer-normalize": "^2.24",
         "lmc/coding-standard": "^3.2",
         "phpstan/extension-installer": "^1.1",
-        "phpstan/phpstan": "^0.12.87",
-        "phpstan/phpstan-phpunit": "^0.12.19",
+        "phpstan/phpstan": "^1.5",
+        "phpstan/phpstan-phpunit": "^1.0",
         "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "~5.0",
         "symfony/finder": "~5.0",

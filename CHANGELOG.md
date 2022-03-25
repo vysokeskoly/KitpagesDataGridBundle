@@ -5,5 +5,6 @@ Changelog
 - Use changelog instead of `VERSIONS.md`
 - Fork for `vysokeskoly`
 - Normalize composer
+- [**BC**] Require php 7.4
 - Require common code quality tools for vysokeskoly
-- Require php 7.4
+  - [**BC**] Add strict types

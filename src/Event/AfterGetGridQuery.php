@@ -4,5 +4,4 @@ namespace Kitpages\DataGridBundle\Event;
 
 class AfterGetGridQuery extends DataGridEvent
 {
-
 }

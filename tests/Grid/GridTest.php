@@ -1,57 +1,58 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Kitpages\DataGridBundle\Grid;
 
-use Kitpages\DataGridBundle\Grid\Grid;
-use Kitpages\DataGridBundle\Grid\Field;
-use Symfony\Component\EventDispatcher\EventDispatcher;
-use Kitpages\DataGridBundle\Grid\ConversionSubscriber;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class GridTest extends TestCase
 {
-    private $grid;
-    private $now;
-    private $row;
-    public function setUp(): void
+    private Grid $grid;
+    private \DateTime $now;
+    private array $row;
+    /** @var Field|MockObject */
+    private $mockField;
+
+    protected function setUp(): void
     {
         $dispatcher = new EventDispatcher();
 
         $this->grid = new Grid();
         $this->grid->setDispatcher($dispatcher);
         $this->now = new \DateTime();
-        $this->row = array(
-            "node.id" => 12,
-            "company.name" => "Test Company",
-            'node.html' => "<a>",
-            "node.createdAt" => $this->now
-        );
-        $this->mockField = $this->getMockBuilder('Kitpages\DataGridBundle\Grid\Field')
+        $this->row = [
+            'node.id' => 12,
+            'company.name' => 'Test Company',
+            'node.html' => '<a>',
+            'node.createdAt' => $this->now,
+        ];
+        $this->mockField = $this->getMockBuilder(Field::class)
             ->disableOriginalConstructor()
             ->getMock();
     }
 
-    public function testConstructor()
+    public function testConstructor(): void
     {
         $grid = new Grid();
         $this->assertTrue($grid instanceof Grid);
     }
 
-    public function testDisplayGridValue()
+    public function testDisplayGridValue(): void
     {
         $this->mockField->expects($this->any())
             ->method('getAutoEscape')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $this->mockField->expects($this->any())
             ->method('getFieldName')
             ->will($this->onConsecutiveCalls('company.name', 'node.createdAt', 'node.id', 'node.html'));
 
         $displayValue = $this->grid->displayGridValue($this->row, $this->mockField);
-        $this->assertEquals("Test Company", $displayValue);
+        $this->assertEquals('Test Company', $displayValue);
 
         $displayValue = $this->grid->displayGridValue($this->row, $this->mockField);
-        $this->assertEquals($this->now->format("Y-m-d H:i:s"), $displayValue);
+        $this->assertEquals($this->now->format('Y-m-d H:i:s'), $displayValue);
 
         $displayValue = $this->grid->displayGridValue($this->row, $this->mockField);
         $this->assertEquals(12, $displayValue);
@@ -60,11 +61,11 @@ class GridTest extends TestCase
         $this->assertEquals('&lt;a&gt;', $displayValue);
     }
 
-    public function testDisplayGridValueAutoEscapeFalse()
+    public function testDisplayGridValueAutoEscapeFalse(): void
     {
         $this->mockField->expects($this->any())
             ->method('getAutoEscape')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $this->mockField->expects($this->any())
             ->method('getFieldName')
@@ -74,14 +75,16 @@ class GridTest extends TestCase
         $this->assertEquals('<a>', $displayValue);
     }
 
-    public function testDisplayGridValueCallbackSimple()
+    public function testDisplayGridValueCallbackSimple(): void
     {
         $this->mockField->expects($this->any())
             ->method('getAutoEscape')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $this->mockField->expects($this->any())
             ->method('getFormatValueCallback')
-            ->will($this->returnValue(function($value){ return strtoupper($value); }));
+            ->willReturn(function ($value) {
+                return mb_strtoupper($value);
+            });
 
         $this->mockField->expects($this->any())
             ->method('getFieldName')
@@ -94,14 +97,16 @@ class GridTest extends TestCase
         $this->assertEquals('<A>', $displayValue);
     }
 
-    public function testDisplayGridValueCallbackExtended()
+    public function testDisplayGridValueCallbackExtended(): void
     {
         $this->mockField->expects($this->any())
             ->method('getAutoEscape')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $this->mockField->expects($this->any())
             ->method('getFormatValueCallback')
-            ->will($this->returnValue(function($value, $row) { return strtoupper($value).';'.$row["node.id"]; }));
+            ->willReturn(function ($value, $row) {
+                return mb_strtoupper($value) . ';' . $row['node.id'];
+            });
 
         $this->mockField->expects($this->any())
             ->method('getFieldName')
@@ -113,15 +118,15 @@ class GridTest extends TestCase
         $this->assertEquals('&lt;A&gt;;12', $displayValue);
     }
 
-    public function testDisplayGridValueConvertionEvent()
+    public function testDisplayGridValueConvertionEvent(): void
     {
         $this->mockField->expects($this->any())
             ->method('getAutoEscape')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $this->mockField->expects($this->any())
             ->method('getFieldName')
-            ->will($this->returnValue('company.name'));
+            ->willReturn('company.name');
 
         $subscriber = new ConversionSubscriber();
         $dispatcher = new EventDispatcher();

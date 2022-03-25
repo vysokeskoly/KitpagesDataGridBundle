@@ -1,7 +1,6 @@
-<?php
-namespace Kitpages\DataGridBundle\Grid;
+<?php declare(strict_types=1);
 
-use Kitpages\DataGridBundle\Grid\Grid;
+namespace Kitpages\DataGridBundle\Grid;
 
 /**
  * Just a subclass of Grid used to test the mecanism of giving a grid object
@@ -9,6 +8,7 @@ use Kitpages\DataGridBundle\Grid\Grid;
  */
 class CustomGrid extends Grid
 {
+    /** @var mixed */
     private $myCustomParamter;
 
     /**
@@ -22,7 +22,7 @@ class CustomGrid extends Grid
     /**
      * @param mixed $myCustomParamter
      */
-    public function setMyCustomParamter($myCustomParamter)
+    public function setMyCustomParamter($myCustomParamter): void
     {
         $this->myCustomParamter = $myCustomParamter;
     }

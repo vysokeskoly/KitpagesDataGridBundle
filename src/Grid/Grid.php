@@ -1,78 +1,61 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Kitpages\DataGridBundle\Grid;
 
 use Kitpages\DataGridBundle\Event\AfterDisplayGridValueConversion;
+use Kitpages\DataGridBundle\Event\DataGridEvent;
 use Kitpages\DataGridBundle\Event\OnDisplayGridValueConversion;
 use Kitpages\DataGridBundle\Paginator\Paginator;
 use Kitpages\DataGridBundle\Tool\UrlTool;
-use Kitpages\DataGridBundle\Grid\Field;
-use Kitpages\DataGridBundle\DataGridException;
-use Kitpages\DataGridBundle\Event\DataGridEvent;
-use Kitpages\DataGridBundle\KitpagesDataGridEvents;
-
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Grid
 {
-    /** @var Paginator */
-    protected $paginator = null;
-    /** @var GridConfig */
-    protected $gridConfig = null;
-    /** @var array */
-    protected $itemList = array();
-    /** @var UrlTool */
-    protected $urlTool = null;
-    /** @var string */
-    protected $requestUri = null;
-    /** @var string */
-    protected $filterValue = null;
-    /** @var string */
-    protected $sortField = null;
-    /** @var string */
-    protected $sortOrder = null;
-    /** @var bool */
-    protected $debugMode = false;
-    /** @var EventDispatcherInterface */
-    protected $dispatcher = null;
-    /** @var string */
-    protected $selectorField = null;
-    /** @var string */
-    protected $selectorValue = null;
-    /** @var string */
-    protected $requestCurrentRoute = null;
-    /** @var array */
-    protected $requestCurrentRouteParams = array();
+    protected ?Paginator $paginator = null;
+    protected ?GridConfig $gridConfig = null;
+    protected array $itemList = [];
+    protected ?UrlTool $urlTool = null;
+    protected ?string $requestUri = null;
+    protected ?string $filterValue = null;
+    protected ?string $sortField = null;
+    protected ?string $sortOrder = null;
+    protected bool $debugMode = false;
+    protected ?EventDispatcherInterface $dispatcher = null;
+    protected ?string $selectorField = null;
+    protected ?string $selectorValue = null;
+    protected ?string $requestCurrentRoute = null;
+    protected array $requestCurrentRouteParams = [];
 
     public function __construct()
     {
     }
 
-    public function getSelectorUrl($selectorField, $selectorValue)
+    public function getSelectorUrl(string $selectorField, string $selectorValue): string
     {
         if (!$this->isSelectorSelected($selectorField, $selectorValue)) {
-            $uri =  $this->urlTool->changeRequestQueryString(
+            $uri = $this->urlTool->changeRequestQueryString(
                 $this->requestUri,
-                array(
+                [
                     $this->getSelectorFieldFormName() => $selectorField,
-                    $this->getSelectorValueFormName() => $selectorValue
-                )
+                    $this->getSelectorValueFormName() => $selectorValue,
+                ]
             );
         } else {
-            $uri =  $this->urlTool->changeRequestQueryString(
+            $uri = $this->urlTool->changeRequestQueryString(
                 $this->requestUri,
-                array(
+                [
                     $this->getSelectorFieldFormName() => '',
-                    $this->getSelectorValueFormName() => ''
-                )
+                    $this->getSelectorValueFormName() => '',
+                ]
             );
         }
+
         return $uri;
     }
 
-    public function getSortUrl($fieldName)
+    public function getSortUrl(string $fieldName): string
     {
-        $uri =  $this->urlTool->changeRequestQueryString(
+        $uri = $this->urlTool->changeRequestQueryString(
             $this->requestUri,
             $this->getSortFieldFormName(),
             $fieldName
@@ -89,18 +72,20 @@ class Grid
             $order
         );
     }
-    public function getSortCssClass($fieldName)
+
+    public function getSortCssClass(string $fieldName): string
     {
         $css = '';
         if ($fieldName == $this->getSortField()) {
             $css .= ' kit-grid-sort ';
-            $css .= ' kit-grid-sort-'.strtolower($this->getSortOrder()).' ';
+            $css .= ' kit-grid-sort-' . mb_strtolower($this->getSortOrder()) . ' ';
         }
 
         return $css;
     }
 
-    public function displayGridValue($row, Field $field)
+    /** @return mixed */
+    public function displayGridValue(array $row, Field $field)
     {
         $value = null;
         $fieldName = $field->getFieldName();
@@ -110,15 +95,7 @@ class Grid
 
         // real treatment
         if (\is_callable($field->getFormatValueCallback())) {
-            $callback = $field->getFormatValueCallback();
-            $reflection = new \ReflectionFunction($callback);
-            if ($reflection->getNumberOfParameters() === 1) {
-                $value =  $callback($value);
-            } elseif ($reflection->getNumberOfParameters() === 2) {
-                $value =  $callback($value, $row);
-            } else {
-                throw new DataGridException('Wrong number of parameters in the callback for field '.$field->getFieldName());
-            }
+            $value = call_user_func($field->getFormatValueCallback(), $value, $row);
         }
 
         // send event for changing grid query builder
@@ -126,11 +103,13 @@ class Grid
         $event->set('value', $value);
         $event->set('row', $row);
         $event->set('field', $field);
-        $this->dispatcher->dispatch(new OnDisplayGridValueConversion($event));
+
+        /** @var DataGridEvent $event */
+        $event = $this->dispatcher->dispatch(new OnDisplayGridValueConversion($event));
 
         if (!$event->isDefaultPrevented()) {
             $value = $event->get('value');
-            if ($value instanceof \DateTime) {
+            if ($value instanceof \DateTimeInterface) {
                 $returnValue = $value->format('Y-m-d H:i:s');
             } else {
                 $returnValue = $value;
@@ -138,87 +117,83 @@ class Grid
             $event->set('returnValue', $returnValue);
         }
 
-        $this->dispatcher->dispatch(new AfterDisplayGridValueConversion($event));
+        /** @var DataGridEvent $event */
+        $event = $this->dispatcher->dispatch(new AfterDisplayGridValueConversion($event));
         $returnValue = $event->get('returnValue');
 
-        // auto escape ? (if null, return null, without autoescape...)
-        if ($field->getAutoEscape() && $returnValue !== null) {
+        if ($field->getAutoEscape() && $returnValue !== null && is_string($returnValue)) {
             $returnValue = htmlspecialchars($returnValue);
         }
 
         return $returnValue;
     }
 
-    public function getFilterFormName()
+    public function getFilterFormName(): string
     {
-        return 'kitdg_grid_'.$this->getGridConfig()->getName().'_filter';
+        return 'kitdg_grid_' . $this->getGridConfig()->getName() . '_filter';
     }
-    public function getSortFieldFormName()
+
+    public function getSortFieldFormName(): string
     {
-        return 'kitdg_grid_'.$this->getGridConfig()->getName().'_sort_field';
+        return 'kitdg_grid_' . $this->getGridConfig()->getName() . '_sort_field';
     }
-    public function getSortOrderFormName()
+
+    public function getSortOrderFormName(): string
     {
-        return 'kitdg_grid_'.$this->getGridConfig()->getName().'_sort_order';
+        return 'kitdg_grid_' . $this->getGridConfig()->getName() . '_sort_order';
     }
-    public function getSelectorCssSelected($selectorField, $selectorValue)
+
+    public function getSelectorCssSelected(string $selectorField, string $selectorValue): ?string
     {
         if ($this->isSelectorSelected($selectorField, $selectorValue)) {
             return 'kit-grid-selector-selected';
-        } else {
-            return ;
         }
-    }
-    public function isSelectorSelected($selectorField, $selectorValue)
-    {
-        if ($this->getSelectorField() == $selectorField
-            && $this->getSelectorValue() == $selectorValue) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-    public function getSelectorFieldFormName()
-    {
-        return 'kitdg_grid_'.$this->getGridConfig()->getName().'_selector_field';
-    }
-    public function getSelectorValueFormName()
-    {
-        return 'kitdg_grid_'.$this->getGridConfig()->getName().'_selector_value';
+
+        return null;
     }
 
-    public function getGridCssName()
+    public function isSelectorSelected(string $selectorField, string $selectorValue): bool
     {
-        return 'kit-grid-'.$this->getGridConfig()->getName();
+        return $this->getSelectorField() === $selectorField
+            && $this->getSelectorValue() === $selectorValue;
     }
 
-    /**
-     * @param \Kitpages\DataGridBundle\Grid\GridConfig $gridConfig
-     */
-    public function setGridConfig($gridConfig)
+    public function getSelectorFieldFormName(): string
+    {
+        return 'kitdg_grid_' . $this->getGridConfig()->getName() . '_selector_field';
+    }
+
+    public function getSelectorValueFormName(): string
+    {
+        return 'kitdg_grid_' . $this->getGridConfig()->getName() . '_selector_value';
+    }
+
+    public function getGridCssName(): string
+    {
+        return 'kit-grid-' . $this->getGridConfig()->getName();
+    }
+
+    public function setGridConfig(GridConfig $gridConfig): void
     {
         $this->gridConfig = $gridConfig;
     }
 
-    /**
-     * @return \Kitpages\DataGridBundle\Grid\GridConfig
-     */
-    public function getGridConfig()
+    public function getGridConfig(): GridConfig
     {
         return $this->gridConfig;
     }
 
-    public function setItemList($itemList)
+    public function setItemList(array $itemList): void
     {
         $this->itemList = $itemList;
     }
 
-    public function getItemList()
+    public function getItemList(): array
     {
         return $this->itemList;
     }
 
-    public function dump($escape = true)
+    public function dump(bool $escape = true): string
     {
         $content = print_r($this->itemList, true);
         if ($escape) {
@@ -228,199 +203,129 @@ class Grid
         $html = '<pre class="kit-grid-debug">';
         $html .= $content;
         $html .= '</pre>';
+
         return $html;
     }
-    /**
-     * @param \Kitpages\DataGridBundle\Paginator\Paginator $paginator
-     */
-    public function setPaginator($paginator)
+
+    public function setPaginator(Paginator $paginator): void
     {
         $this->paginator = $paginator;
     }
 
-    /**
-     * @return \Kitpages\DataGridBundle\Paginator\Paginator
-     */
-    public function getPaginator()
+    public function getPaginator(): Paginator
     {
         return $this->paginator;
     }
 
-    /**
-     * @param \Kitpages\DataGridBundle\Tool\UrlTool $urlTool
-     */
-    public function setUrlTool($urlTool)
+    public function setUrlTool(UrlTool $urlTool): void
     {
         $this->urlTool = $urlTool;
     }
 
-    /**
-     * @return \Kitpages\DataGridBundle\Tool\UrlTool
-     */
-    public function getUrlTool()
+    public function getUrlTool(): UrlTool
     {
         return $this->urlTool;
     }
 
-    /**
-     * @param string $requestUri
-     */
-    public function setRequestUri($requestUri)
+    public function setRequestUri(string $requestUri): void
     {
         $this->requestUri = $requestUri;
     }
 
-    /**
-     * @return string
-     */
-    public function getRequestCurrentRoute()
+    public function getRequestCurrentRoute(): string
     {
         return $this->requestCurrentRoute;
     }
 
-    /**
-     * @param string $requestCurrentRoute
-     */
-    public function setRequestCurrentRoute($requestCurrentRoute)
+    public function setRequestCurrentRoute(?string $requestCurrentRoute): void
     {
         $this->requestCurrentRoute = $requestCurrentRoute;
     }
 
-    /**
-     * @return array
-     */
-    public function getRequestCurrentRouteParams()
+    public function getRequestCurrentRouteParams(): array
     {
         return $this->requestCurrentRouteParams;
     }
 
-    /**
-     * @param array $requestCurrentRouteParams
-     */
-    public function setRequestCurrentRouteParams($requestCurrentRouteParams)
+    public function setRequestCurrentRouteParams(array $requestCurrentRouteParams): void
     {
         $this->requestCurrentRouteParams = $requestCurrentRouteParams;
     }
 
-    /**
-     * @return string
-     */
-    public function getRequestUri()
+    public function getRequestUri(): string
     {
         return $this->requestUri;
     }
 
-    /**
-     * @param string $filterValue
-     */
-    public function setFilterValue($filterValue)
+    public function setFilterValue(string $filterValue): void
     {
         $this->filterValue = $filterValue;
     }
 
-    /**
-     * @return string
-     */
-    public function getFilterValue()
+    public function getFilterValue(): string
     {
         return $this->filterValue;
     }
 
-    /**
-     * @param string $sortField
-     */
-    public function setSortField($sortField)
+    public function setSortField(string $sortField): void
     {
         $this->sortField = $sortField;
     }
 
-    /**
-     * @return string
-     */
-    public function getSortField()
+    public function getSortField(): string
     {
         return $this->sortField;
     }
 
-    /**
-     * @param string $sortOrder
-     */
-    public function setSortOrder($sortOrder)
+    public function setSortOrder(string $sortOrder): void
     {
         $this->sortOrder = $sortOrder;
     }
 
-    /**
-     * @return string
-     */
-    public function getSortOrder()
+    public function getSortOrder(): string
     {
         return $this->sortOrder;
     }
 
-    /**
-     * @param string $selectorField
-     */
-    public function setSelectorField($selectorField)
+    public function setSelectorField(string $selectorField): void
     {
         $this->selectorField = $selectorField;
     }
 
-    /**
-     * @return string
-     */
-    public function getSelectorField()
+    public function getSelectorField(): string
     {
         return $this->selectorField;
     }
 
-    /**
-     * @param string $selectorValue
-     */
-    public function setSelectorValue($selectorValue)
+    public function setSelectorValue(string $selectorValue): void
     {
         $this->selectorValue = $selectorValue;
     }
 
-    /**
-     * @return string
-     */
-    public function getSelectorValue()
+    public function getSelectorValue(): string
     {
         return $this->selectorValue;
     }
 
-    /**
-     * @param boolean $debugMode
-     */
-    public function setDebugMode($debugMode)
+    public function setDebugMode(bool $debugMode): self
     {
         $this->debugMode = $debugMode;
+
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function getDebugMode()
+    public function getDebugMode(): bool
     {
         return $this->debugMode;
     }
 
-    /**
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher
-     */
-    public function setDispatcher(EventDispatcherInterface $dispatcher)
+    public function setDispatcher(EventDispatcherInterface $dispatcher): void
     {
         $this->dispatcher = $dispatcher;
     }
 
-    /**
-     * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface
-     */
-    public function getDispatcher()
+    public function getDispatcher(): \Symfony\Component\EventDispatcher\EventDispatcherInterface
     {
         return $this->dispatcher;
     }
-
 }

@@ -4,5 +4,4 @@ namespace Kitpages\DataGridBundle\Event;
 
 class AfterApplySort extends DataGridEvent
 {
-
 }

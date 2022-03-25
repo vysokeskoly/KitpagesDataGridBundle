@@ -1,29 +1,34 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Kitpages\DataGridBundle;
 
-use Symfony\Component\HttpKernel\Kernel;
+use Doctrine\Bundle\DoctrineBundle\DoctrineBundle;
+use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
+use Symfony\Bundle\TwigBundle\TwigBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
+use Symfony\Component\HttpKernel\Kernel;
 
 class AppKernel extends Kernel
 {
     public function registerBundles()
     {
-        $bundles = array(
-            new \Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
-            new \Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
-            new \Kitpages\DataGridBundle\KitpagesDataGridBundle(),
-            new \Symfony\Bundle\TwigBundle\TwigBundle(),
-        );
+        $bundles = [
+            new FrameworkBundle(),
+            new DoctrineBundle(),
+            new KitpagesDataGridBundle(),
+            new TwigBundle(),
+        ];
+
         return $bundles;
     }
 
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
-        $loader->load(__DIR__.'/tests/app/config/config_'.$this->getEnvironment().'.yml');
+        $loader->load(__DIR__ . '/app/config/config_' . $this->getEnvironment() . '.yml');
     }
 
     public function getCacheDir()
     {
-        return $this->getProjectDir().'/tests/app/cache/'.$this->environment;
+        return $this->getProjectDir() . '/var/cache/' . $this->environment;
     }
 }

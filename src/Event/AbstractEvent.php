@@ -1,23 +1,21 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Kitpages\DataGridBundle\Event;
 
 use Symfony\Contracts\EventDispatcher\Event;
 
 abstract class AbstractEvent extends Event
 {
-    /** @var array */
-    protected $data = array();
-    /** @var bool */
-    protected $isDefaultPrevented = false;
-    /** @var bool */
-    protected $isPropagationStopped = false;
+    protected array $data = [];
+    protected bool $isDefaultPrevented = false;
+    protected bool $isPropagationStopped = false;
 
-    public function preventDefault()
+    public function preventDefault(): void
     {
         $this->isDefaultPrevented = true;
     }
 
-    public function isDefaultPrevented()
+    public function isDefaultPrevented(): bool
     {
         return $this->isDefaultPrevented;
     }
@@ -32,11 +30,19 @@ abstract class AbstractEvent extends Event
         return $this->isPropagationStopped;
     }
 
-    public function set($key, $val)
+    /**
+     * @param mixed $key
+     * @param mixed $val
+     */
+    public function set($key, $val): void
     {
         $this->data[$key] = $val;
     }
 
+    /**
+     * @param mixed $key
+     * @return mixed
+     */
     public function get($key)
     {
         if (!array_key_exists($key, $this->data)) {
@@ -45,5 +51,4 @@ abstract class AbstractEvent extends Event
 
         return $this->data[$key];
     }
-
 }

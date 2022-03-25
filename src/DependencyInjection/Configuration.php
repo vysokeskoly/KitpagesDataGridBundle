@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Kitpages\DataGridBundle\DependencyInjection;
 
+use Kitpages\DataGridBundle\Hydrators\DataGridHydrator;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -13,9 +14,6 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
  */
 class Configuration implements ConfigurationInterface
 {
-    /**
-     * {@inheritDoc}
-     */
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder('kitpages_data_grid');
@@ -31,7 +29,7 @@ class Configuration implements ConfigurationInterface
         return $treeBuilder;
     }
 
-    private function addGridConfiguration(ArrayNodeDefinition $node)
+    private function addGridConfiguration(ArrayNodeDefinition $node): void
     {
         $node
             ->addDefaultsIfNotSet()
@@ -40,7 +38,7 @@ class Configuration implements ConfigurationInterface
                     ->addDefaultsIfNotSet()
                     ->children()
                         ->scalarNode('hydrator_class')
-                            ->defaultValue('\Kitpages\DataGridBundle\Hydrators\DataGridHydrator')
+                            ->defaultValue(DataGridHydrator::class)
                         ->end()
                         ->scalarNode('default_twig')
                             ->cannotBeEmpty()
@@ -48,11 +46,10 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-            ->end()
-        ;
-
+            ->end();
     }
-    private function addPaginatorConfiguration(ArrayNodeDefinition $node)
+
+    private function addPaginatorConfiguration(ArrayNodeDefinition $node): void
     {
         $node
             ->addDefaultsIfNotSet()
@@ -74,8 +71,6 @@ class Configuration implements ConfigurationInterface
                         ->end()
                     ->end()
                 ->end()
-            ->end()
-        ;
-
+            ->end();
     }
 }

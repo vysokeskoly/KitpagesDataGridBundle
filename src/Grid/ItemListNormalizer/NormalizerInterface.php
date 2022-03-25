@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Kitpages\DataGridBundle\Grid\ItemListNormalizer;
 
@@ -7,10 +7,5 @@ use Doctrine\ORM\QueryBuilder;
 
 interface NormalizerInterface
 {
-    /**
-     * @param Query $query
-     * @param QueryBuilder $queryBuilder
-     * @return array
-     */
-    public function normalize(Query $query, QueryBuilder $queryBuilder);
-} 
+    public function normalize(Query $query, QueryBuilder $queryBuilder): array;
+}

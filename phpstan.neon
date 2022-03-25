@@ -1,6 +1,17 @@
 parameters:
+    treatPhpDocTypesAsCertain: false
     checkMissingIterableValueType: false
     checkGenericClassInNonGenericObjectType: false
 
-    excludes_analyse:
+    excludePaths:
         - src/DependencyInjection/Configuration.php
+
+    ignoreErrors:
+        -
+            message: "#^Call to an undefined method object\\:\\:getManager\\(\\)\\.$#"
+            count: 1
+            path: tests/BundleOrmTestCase.php
+        -
+            message: "#^Parameter \\#1 \\$field of method Kitpages\\\\DataGridBundle\\\\Grid\\\\GridConfig\\:\\:addField\\(\\) expects Kitpages\\\\DataGridBundle\\\\Grid\\\\Field\\|string, array\\|\\(Closure\\)\\|float\\|int\\|stdClass\\|true\\|null given\\.$#"
+            count: 1
+            path: tests/Grid/GridConfigTest.php

@@ -4,12 +4,12 @@
                   xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
                   http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
-    <entity name="Kitpages\DataGridBundle\Tests\TestEntities\NodeAssoc" table="node_assoc">
+    <entity name="Kitpages\DataGridBundle\TestEntities\NodeAssoc" table="node_assoc">
 
         <id name="id" type="integer" column="id"/>
         <id name="name" type="string" column="name"/>
 
-        <one-to-many field="nodeList" mapped-by="assoc" target-entity="Kitpages\DataGridBundle\Tests\TestEntities\Node" />
+        <one-to-many field="nodeList" mapped-by="assoc" target-entity="Kitpages\DataGridBundle\TestEntities\Node" />
 
     </entity>
 

@@ -1,50 +1,40 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Kitpages\DataGridBundle\Grid;
 
 use Kitpages\DataGridBundle\DataGridException;
 
 class Field
 {
-    /** @var string */
-    protected $fieldName;
-    /** @var string */
-    protected $label;
-    /** @var boolean */
-    protected $sortable = false;
-    /** @var boolean */
-    protected $filterable = false;
-    /** @var boolean */
-    protected $visible = true;
+    protected string $fieldName;
+    protected string $label;
+    protected bool $sortable = false;
+    protected bool $filterable = false;
+    protected bool $visible = true;
     /** @var callable */
     protected $formatValueCallback;
-    /** @var boolean */
-    protected $autoEscape = true;
-    /** @var boolean */
-    protected $translatable = false;
-    /** @var string */
-    protected $category;
-    /** @var bool */
-    protected $nullIfNotExists = false;
-    /** @var array  */
-    protected $dataList = array();
-    /** @var string */
-    protected $uniqueId;
+    protected bool $autoEscape = true;
+    protected bool $translatable = false;
+    protected string $category;
+    protected bool $nullIfNotExists = false;
+    protected array $dataList = [];
+    protected string $uniqueId;
     /**
      * List of tags associated to a field. Used only by users of the bundles.
      * No influence in the internals of the bundle.
      * @var string[]
      */
-    protected $tagList = array();
+    protected array $tagList = [];
 
     public function __construct(
-        $fieldName,
-        array $optionList = array(),
-        array $tagList = array()
+        string $fieldName,
+        array $optionList = [],
+        array $tagList = []
     ) {
         $this->fieldName = $fieldName;
         $this->label = $fieldName;
         foreach ($optionList as $key => $val) {
-            if (\in_array($key, array(
+            if (\in_array($key, [
                 'label',
                 'sortable',
                 'filterable',
@@ -55,8 +45,8 @@ class Field
                 'category',
                 'nullIfNotExists',
                 'dataList',
-                'uniqueId'
-            ), true)) {
+                'uniqueId',
+            ], true)) {
                 $this->$key = $val;
             } else {
                 throw new \InvalidArgumentException("key $key doesn't exist in option list");
@@ -65,221 +55,151 @@ class Field
         $this->tagList = $tagList;
     }
 
-    /**
-     * @param string $fieldName
-     */
-    public function setFieldName($fieldName)
+    public function setFieldName(string $fieldName): void
     {
         $this->fieldName = $fieldName;
     }
 
-    /**
-     * @return string
-     */
-    public function getFieldName()
+    public function getFieldName(): string
     {
         return $this->fieldName;
     }
 
-    /**
-     * @param boolean $filterable
-     */
-    public function setFilterable($filterable)
+    public function setFilterable(bool $filterable): void
     {
         $this->filterable = $filterable;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getFilterable()
+    public function getFilterable(): bool
     {
         return $this->filterable;
     }
 
-    /**
-     * @param callable $formatValueCallback
-     */
-    public function setFormatValueCallback($formatValueCallback)
+    public function setFormatValueCallback(callable $formatValueCallback): void
     {
         $this->formatValueCallback = $formatValueCallback;
     }
 
-    /**
-     * @return callable
-     */
-    public function getFormatValueCallback()
+    public function getFormatValueCallback(): ?callable
     {
         return $this->formatValueCallback;
     }
 
-    /**
-     * @param string $label
-     */
-    public function setLabel($label)
+    public function setLabel(string $label): void
     {
         $this->label = $label;
     }
 
-    /**
-     * @return string
-     */
-    public function getLabel()
+    public function getLabel(): string
     {
         return $this->label;
     }
 
-    /**
-     * @param boolean $sortable
-     */
-    public function setSortable($sortable)
+    public function setSortable(bool $sortable): void
     {
         $this->sortable = $sortable;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getSortable()
+    public function getSortable(): bool
     {
         return $this->sortable;
     }
 
-    /**
-     * @param boolean $visible
-     */
-    public function setVisible($visible)
+    public function setVisible(bool $visible): void
     {
         $this->visible = $visible;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getVisible()
+    public function getVisible(): bool
     {
         return $this->visible;
     }
 
-    /**
-     * @param boolean $autoEscape
-     */
-    public function setAutoEscape($autoEscape)
+    public function setAutoEscape(bool $autoEscape): void
     {
         $this->autoEscape = $autoEscape;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getAutoEscape()
+    public function getAutoEscape(): bool
     {
         return $this->autoEscape;
     }
 
-    /**
-     * @param boolean $translatable
-     */
-    public function setTranslatable($translatable)
+    public function setTranslatable(bool $translatable): void
     {
         $this->translatable = $translatable;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getTranslatable()
+    public function getTranslatable(): bool
     {
         return $this->translatable;
     }
 
-    /**
-     * @param string $category
-     */
-    public function setCategory($category)
+    public function setCategory(string $category): void
     {
         $this->category = $category;
     }
 
-    /**
-     * @return string
-     */
-    public function getCategory()
+    public function getCategory(): string
     {
         return $this->category;
     }
 
-    /**
-     * @param boolean $nullIfNotExists
-     */
-    public function setNullIfNotExists($nullIfNotExists)
+    public function setNullIfNotExists(bool $nullIfNotExists): void
     {
         $this->nullIfNotExists = $nullIfNotExists;
     }
 
-    /**
-     * @return boolean
-     */
-    public function getNullIfNotExists()
+    public function getNullIfNotExists(): bool
     {
         return $this->nullIfNotExists;
     }
 
     /**
-     * @param string $key
-     * @return array
      * @throws DataGridException
      */
-    public function getData($key)
+    public function getData(string $key): array
     {
         if (!array_key_exists($key, $this->dataList)) {
             throw new DataGridException(
                 "key [$key] is not defined in the data-list (should be defined in the dataList parameter in the new Field..."
             );
         }
+
         return $this->dataList[$key];
     }
 
     /**
      * @return string[]
      */
-    public function getTagList()
+    public function getTagList(): array
     {
         return $this->tagList;
     }
 
     /**
      * @param string[] $tagList
-     * @return self
      */
-    public function setTagList($tagList)
+    public function setTagList(array $tagList): self
     {
         $this->tagList = $tagList;
+
         return $this;
     }
 
     /**
      * Returns true if the given $tag is present in the tag list of the field.
-     *
-     * @param $tag
-     * @return bool
      */
-    public function hasTag($tag)
+    public function hasTag(string $tag): bool
     {
         return \in_array($tag, $this->tagList, true);
     }
 
-    /**
-     * @return string
-     */
-    public function getUniqueId(): ?string
+    public function getUniqueId(): string
     {
         return $this->uniqueId;
     }
 
-    /**
-     * @param string $uniqueId
-     */
     public function setUniqueId(string $uniqueId): void
     {
         $this->uniqueId = $uniqueId;

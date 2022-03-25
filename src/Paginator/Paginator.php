@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Kitpages\DataGridBundle\Paginator;
 
@@ -6,31 +6,29 @@ use Kitpages\DataGridBundle\Tool\UrlTool;
 
 class Paginator
 {
-    protected $totalPageCount = null;
-    protected $minPage = null;
-    protected $maxPage = null;
-    protected $nextButtonPage = null;
-    protected $previousButtonPage = null;
-    protected $totalItemCount = 0;
-    protected $currentPage = 1;
-    /** @var UrlTool */
-    protected $urlTool = null;
-    /** @var PaginatorConfig */
-    protected $paginatorConfig = null;
-    /** @var string */
-    protected $requestUri = null;
+    protected ?int $totalPageCount = null;
+    protected ?int $minPage = null;
+    protected ?int $maxPage = null;
+    protected ?int $nextButtonPage = null;
+    protected ?int $previousButtonPage = null;
+    protected int $totalItemCount = 0;
+    protected int $currentPage = 1;
+    protected ?UrlTool $urlTool = null;
+    protected ?PaginatorConfig $paginatorConfig = null;
+    protected ?string $requestUri = null;
 
-    public function getPageRange()
+    public function getPageRange(): array
     {
-        $tab = array();
-        for ($i = $this->minPage ; $i <= $this->maxPage ; $i++) {
+        $tab = [];
+        for ($i = $this->minPage; $i <= $this->maxPage; $i++) {
             $tab[] = $i;
         }
 
         return $tab;
     }
 
-    public function getUrl($key, $val)
+    /** @param mixed $val */
+    public function getUrl(string $key, $val): string
     {
         return $this->urlTool->changeRequestQueryString(
             $this->requestUri,
@@ -39,122 +37,103 @@ class Paginator
         );
     }
 
-    public function setMaxPage($maxPage)
+    public function setMaxPage(?int $maxPage): void
     {
         $this->maxPage = $maxPage;
     }
 
-    public function getMaxPage()
+    public function getMaxPage(): ?int
     {
         return $this->maxPage;
     }
 
-    public function setMinPage($minPage)
+    public function setMinPage(?int $minPage): void
     {
         $this->minPage = $minPage;
     }
 
-    public function getMinPage()
+    public function getMinPage(): ?int
     {
         return $this->minPage;
     }
 
-    public function setNextButtonPage($nextButtonPage)
+    public function setNextButtonPage(?int $nextButtonPage): void
     {
         $this->nextButtonPage = $nextButtonPage;
     }
 
-    public function getNextButtonPage()
+    public function getNextButtonPage(): ?int
     {
         return $this->nextButtonPage;
     }
 
-    public function setPreviousButtonPage($previousButtonPage)
+    public function setPreviousButtonPage(?int $previousButtonPage): void
     {
         $this->previousButtonPage = $previousButtonPage;
     }
 
-    public function getPreviousButtonPage()
+    public function getPreviousButtonPage(): ?int
     {
         return $this->previousButtonPage;
     }
 
-    public function setTotalItemCount($totalItemCount)
+    public function setTotalItemCount(?int $totalItemCount): void
     {
         $this->totalItemCount = $totalItemCount;
     }
 
-    public function getTotalItemCount()
+    public function getTotalItemCount(): ?int
     {
         return $this->totalItemCount;
     }
 
-    public function setTotalPageCount($totalPageCount)
+    public function setTotalPageCount(?int $totalPageCount): void
     {
         $this->totalPageCount = $totalPageCount;
     }
 
-    public function getTotalPageCount()
+    public function getTotalPageCount(): ?int
     {
         return $this->totalPageCount;
     }
 
-    public function setCurrentPage($currentPage)
+    public function setCurrentPage(int $currentPage): void
     {
         $this->currentPage = $currentPage;
     }
 
-    public function getCurrentPage()
+    public function getCurrentPage(): int
     {
         return $this->currentPage;
     }
 
-    /**
-     * @param \Kitpages\DataGridBundle\Tool\UrlTool $urlTool
-     */
-    public function setUrlTool($urlTool)
+    public function setUrlTool(UrlTool $urlTool): void
     {
         $this->urlTool = $urlTool;
     }
 
-    /**
-     * @return \Kitpages\DataGridBundle\Tool\UrlTool
-     */
-    public function getUrlTool()
+    public function getUrlTool(): UrlTool
     {
         return $this->urlTool;
     }
 
-    /**
-     * @param \Kitpages\DataGridBundle\Paginator\PaginatorConfig $paginatorConfig
-     */
-    public function setPaginatorConfig($paginatorConfig)
+    public function setPaginatorConfig(PaginatorConfig $paginatorConfig): void
     {
         $this->paginatorConfig = $paginatorConfig;
     }
 
-    /**
-     * @return \Kitpages\DataGridBundle\Paginator\PaginatorConfig
-     */
-    public function getPaginatorConfig()
+    public function getPaginatorConfig(): PaginatorConfig
     {
         return $this->paginatorConfig;
     }
 
-    /**
-     * @param string $requestUri
-     */
-    public function setRequestUri($requestUri)
+    public function setRequestUri(string $requestUri): void
     {
         $this->requestUri = $requestUri;
     }
 
-    /**
-     * @return string
-     */
-    public function getRequestUri()
+    public function getRequestUri(): string
     {
         return $this->requestUri;
     }
-
 }

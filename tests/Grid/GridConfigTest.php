@@ -1,17 +1,12 @@
-<?php
+<?php declare(strict_types=1);
+
 namespace Kitpages\DataGridBundle\Grid;
 
-use Kitpages\DataGridBundle\Grid\Field;
-use Kitpages\DataGridBundle\Grid\GridConfig;
 use PHPUnit\Framework\TestCase;
-
 
 class GridConfigTest extends TestCase
 {
-    /**
-     * @var GridConfig
-     */
-    protected $gridConfig;
+    protected GridConfig $gridConfig;
 
     protected function setUp(): void
     {
@@ -20,7 +15,7 @@ class GridConfigTest extends TestCase
         parent::setUp();
     }
 
-    public function testCanAddAndRetrieveSingleFieldLegacySyntax()
+    public function testCanAddAndRetrieveSingleFieldLegacySyntax(): void
     {
         $fieldName = uniqid();
 
@@ -29,20 +24,20 @@ class GridConfigTest extends TestCase
         $this->assertInstanceOf('Kitpages\DataGridBundle\Grid\Field', $this->gridConfig->getFieldByName($fieldName));
     }
 
-    public function testCanAddAndRetrieveSingleFieldNewSyntax()
+    public function testCanAddAndRetrieveSingleFieldNewSyntax(): void
     {
         $fieldName = uniqid();
-        $this->gridConfig->addField($fieldName, array(
+        $this->gridConfig->addField($fieldName, [
             'label' => $fieldName,
-        ));
+        ]);
 
         $this->assertInstanceOf(Field::class, $this->gridConfig->getFieldByName($fieldName));
         $this->assertEquals($fieldName, $this->gridConfig->getFieldByName($fieldName)->getLabel());
     }
 
-    public function testAddFieldWrongArgumentType()
+    public function testAddFieldWrongArgumentType(): void
     {
-        $arguments = array(true, 1, 2.2, array(), new \stdClass(), null, function () { }, );
+        $arguments = [true, 1, 2.2, [], new \stdClass(), null, function (): void { }];
 
         foreach ($arguments as $argument) {
             try {
@@ -54,16 +49,16 @@ class GridConfigTest extends TestCase
         }
     }
 
-    public function testTags()
+    public function testTags(): void
     {
         $this->gridConfig->addField(
-            new Field('f1', array(), array('foo', 'bar'))
+            new Field('f1', [], ['foo', 'bar'])
         );
         $this->gridConfig->addField(
-            new Field('f2', array(), array('bar'))
+            new Field('f2', [], ['bar'])
         );
         $this->gridConfig->addField(
-            new Field('f3', array(), array('foo', 'bar', 'biz'))
+            new Field('f3', [], ['foo', 'bar', 'biz'])
         );
         $this->assertCount(1, $this->gridConfig->getFieldListByTag('biz'));
         $this->assertCount(2, $this->gridConfig->getFieldListByTag('foo'));

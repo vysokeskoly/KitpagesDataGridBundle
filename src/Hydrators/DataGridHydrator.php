@@ -1,26 +1,23 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Kitpages\DataGridBundle\Hydrators;
 
-class DataGridHydrator extends \Doctrine\ORM\Internal\Hydration\AbstractHydrator
-{
+use Doctrine\ORM\Internal\Hydration\AbstractHydrator;
 
-    /**
-     * {@inheritdoc}
-     */
+class DataGridHydrator extends AbstractHydrator
+{
     protected function hydrateAllData()
     {
-        $result = array();
-        while ($data = $this->_stmt->fetch(\PDO::FETCH_ASSOC)) {
+        $result = [];
+
+        while ($data = $this->statement()->fetchAssociative()) {
             $this->hydrateRowData($data, $result);
         }
+
         return $result;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function hydrateRowData(array $data, array &$result)
+    protected function hydrateRowData(array $data, array &$result): void
     {
         $result[] = $this->gatherScalarRowData($data);
     }
@@ -33,13 +30,13 @@ class DataGridHydrator extends \Doctrine\ORM\Internal\Hydration\AbstractHydrator
      * values according to their types. The resulting row has the same number
      * of elements as before.
      *
-     * @param array $data
+     * @param mixed[] $data
      *
-     * @return array The processed row.
+     * @return mixed[] The processed row.
      */
-    protected function gatherScalarRowData(&$data)
+    protected function gatherScalarRowData(&$data): array
     {
-        $rowData = array();
+        $rowData = [];
         foreach ($data as $key => $value) {
             if (($cacheKeyInfo = $this->hydrateColumnInfo($key)) === null) {
                 continue;
@@ -47,20 +44,21 @@ class DataGridHydrator extends \Doctrine\ORM\Internal\Hydration\AbstractHydrator
             $fieldName = $cacheKeyInfo['fieldName'];
             // WARNING: BC break! We know this is the desired behavior to type convert values, but this
             // erroneous behavior exists since 2.0 and we're forced to keep compatibility.
-            if ( ! isset($cacheKeyInfo['isScalar'])) {
-                $dqlAlias  = $cacheKeyInfo['dqlAlias'];
-                $type      = $cacheKeyInfo['type'];
+            if (!isset($cacheKeyInfo['isScalar'])) {
+                $dqlAlias = $cacheKeyInfo['dqlAlias'];
+                $type = $cacheKeyInfo['type'];
                 $fieldName = $dqlAlias . $this->getFieldSeparator() . $fieldName;
-                $value     = $type
+                $value = $type
                     ? $type->convertToPHPValue($value, $this->_platform)
                     : $value;
             }
             $rowData[$fieldName] = $value;
         }
+
         return $rowData;
     }
 
-    protected function getFieldSeparator()
+    protected function getFieldSeparator(): string
     {
         return '.';
     }
