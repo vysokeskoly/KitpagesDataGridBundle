@@ -71,7 +71,7 @@ class BundleOrmTestCase extends KernelTestCase
             ->setContent('foobar')
             ->setUser('joe')
             ->setCreatedAt(new \DateTime('2010-04-24 17:15:23'))
-            ->setParentId('');
+            ->setParentId(0);
         $this->em->persist($node1);
 
         $node2 = (new Node())
@@ -79,7 +79,7 @@ class BundleOrmTestCase extends KernelTestCase
             ->setContent('I like it!')
             ->setUser('toto')
             ->setCreatedAt(new \DateTime('2010-04-26 12:14:20'))
-            ->setParentId('1')
+            ->setParentId(1)
             ->setMainNode($node1);
         $this->em->persist($node2);
 
@@ -88,7 +88,7 @@ class BundleOrmTestCase extends KernelTestCase
             ->setContent('I like it!')
             ->setUser('toto')
             ->setCreatedAt(new \DateTime('2010-04-27 12:14:20'))
-            ->setParentId('1')
+            ->setParentId(1)
             ->setMainNode($node1);
         $this->em->persist($node3);
 
@@ -97,7 +97,7 @@ class BundleOrmTestCase extends KernelTestCase
             ->setContent('Hello bob')
             ->setUser('toto')
             ->setCreatedAt(new \DateTime('2010-04-28 12:14:20'))
-            ->setParentId('2');
+            ->setParentId(2);
         $this->em->persist($node4);
 
         $node5 = (new Node())

@@ -2,56 +2,60 @@
 
 namespace Kitpages\DataGridBundle\TestEntities;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
 class Node
 {
     protected int $id;
-    protected string $user;
-    protected string $content;
+    protected ?string $user = null;
+    protected ?string $content = null;
     protected \DateTime $createdAt;
-    protected string $parentId;
-    protected array $subNodeList;
-    protected self $mainNode;
-    protected NodeAssoc $assoc;
+    protected ?int $parentId = null;
+    protected Collection $subNodeList;
+    protected ?self $mainNode = null;
+    protected ?NodeAssoc $assoc = null;
 
-    public function getId(): int
+    public function __construct()
     {
-        return $this->id;
+        $this->createdAt = new \DateTime();
+        $this->subNodeList = new ArrayCollection();
     }
 
-    public function setId(int $id): self
+    public function setId(?int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    public function getUser(): string
+    public function getId(): int
     {
-        return $this->user;
+        return $this->id;
     }
 
-    public function setUser(string $user): self
+    public function setUser(?string $user): self
     {
         $this->user = $user;
 
         return $this;
     }
 
-    public function getContent(): string
+    public function getUser(): ?string
     {
-        return $this->content;
+        return $this->user;
     }
 
-    public function setContent(string $content): self
+    public function setContent(?string $content): self
     {
         $this->content = $content;
 
         return $this;
     }
 
-    public function getCreatedAt(): \DateTime
+    public function getContent(): ?string
     {
-        return $this->createdAt;
+        return $this->content;
     }
 
     public function setCreatedAt(\DateTime $createdAt): self
@@ -61,51 +65,56 @@ class Node
         return $this;
     }
 
-    public function getParentId(): string
+    public function getCreatedAt(): \DateTime
     {
-        return $this->parentId;
+        return $this->createdAt;
     }
 
-    public function setParentId(string $parentId): self
+    public function setParentId(?int $parentId): self
     {
         $this->parentId = $parentId;
 
         return $this;
     }
 
-    public function getSubNodeList(): array
+    public function getParentId(): ?int
     {
-        return $this->subNodeList;
+        return $this->parentId;
     }
 
-    public function setSubNodeList(array $subNodeList): self
+    public function setSubNodeList(Collection $subNodeList): self
     {
         $this->subNodeList = $subNodeList;
 
         return $this;
     }
 
-    public function getMainNode(): self
+    public function getSubNodeList(): Collection
     {
-        return $this->mainNode;
+        return $this->subNodeList;
     }
 
-    public function setMainNode(self $mainNode): self
+    public function setMainNode(?self $mainNode): self
     {
         $this->mainNode = $mainNode;
 
         return $this;
     }
 
-    public function getAssoc(): NodeAssoc
+    public function getMainNode(): ?self
     {
-        return $this->assoc;
+        return $this->mainNode;
     }
 
-    public function setAssoc(NodeAssoc $assoc): self
+    public function setAssoc(?NodeAssoc $assoc): self
     {
         $this->assoc = $assoc;
 
         return $this;
+    }
+
+    public function getAssoc(): ?NodeAssoc
+    {
+        return $this->assoc;
     }
 }

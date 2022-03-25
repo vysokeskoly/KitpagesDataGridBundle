@@ -3,12 +3,18 @@
 namespace Kitpages\DataGridBundle\TestEntities;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 class NodeAssoc
 {
     protected int $id;
     protected string $name;
-    protected ArrayCollection $nodeList;
+    protected Collection $nodeList;
+
+    public function __construct()
+    {
+        $this->nodeList = new ArrayCollection();
+    }
 
     public function getId(): int
     {
@@ -48,7 +54,7 @@ class NodeAssoc
         return $this;
     }
 
-    public function getNodeList(): ArrayCollection
+    public function getNodeList(): Collection
     {
         return $this->nodeList;
     }
