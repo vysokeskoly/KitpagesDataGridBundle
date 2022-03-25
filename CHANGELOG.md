@@ -3,6 +3,9 @@ Changelog
 
 ## Unreleased
 
+## 4.0.1 - 2022-03-25
+- just tag for a correct commit
+
 ## 4.0.0 - 2022-03-25
 - Use changelog instead of `VERSIONS.md`
 - Fork for `vysokeskoly`
