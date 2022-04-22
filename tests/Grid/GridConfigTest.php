@@ -2,6 +2,7 @@
 
 namespace Kitpages\DataGridBundle\Grid;
 
+use Doctrine\ORM\QueryBuilder;
 use PHPUnit\Framework\TestCase;
 
 class GridConfigTest extends TestCase
@@ -10,23 +11,26 @@ class GridConfigTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->gridConfig = new GridConfig();
+        $this->gridConfig = new GridConfig(
+            $this->createMock(QueryBuilder::class),
+            'node.id'
+        );
 
         parent::setUp();
     }
 
     public function testCanAddAndRetrieveSingleFieldLegacySyntax(): void
     {
-        $fieldName = uniqid();
+        $fieldName = uniqid('', true);
 
         $this->gridConfig->addField(new Field($fieldName));
 
-        $this->assertInstanceOf('Kitpages\DataGridBundle\Grid\Field', $this->gridConfig->getFieldByName($fieldName));
+        $this->assertInstanceOf(Field::class, $this->gridConfig->getFieldByName($fieldName));
     }
 
     public function testCanAddAndRetrieveSingleFieldNewSyntax(): void
     {
-        $fieldName = uniqid();
+        $fieldName = uniqid('', true);
         $this->gridConfig->addField($fieldName, [
             'label' => $fieldName,
         ]);

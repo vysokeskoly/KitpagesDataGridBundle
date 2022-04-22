@@ -18,7 +18,7 @@ class Field
     protected string $category;
     protected bool $nullIfNotExists = false;
     protected array $dataList = [];
-    protected string $uniqueId;
+    protected ?string $uniqueId = null;
     /**
      * List of tags associated to a field. Used only by users of the bundles.
      * No influence in the internals of the bundle.
@@ -195,7 +195,7 @@ class Field
         return \in_array($tag, $this->tagList, true);
     }
 
-    public function getUniqueId(): string
+    public function getUniqueId(): ?string
     {
         return $this->uniqueId;
     }

@@ -26,8 +26,12 @@ class BundleOrmTestCase extends KernelTestCase
         $application->run(new ArrayInput([
             'doctrine:schema:create',
         ]));
-        $this->em = $kernel->getContainer()
-            ->get('doctrine')
+
+        $doctrine = $kernel->getContainer()
+            ->get('doctrine');
+        $this->assertNotNull($doctrine);
+
+        $this->em = $doctrine
             ->getManager();
         $this->createTestEntities();
 

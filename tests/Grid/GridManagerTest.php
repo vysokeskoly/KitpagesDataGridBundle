@@ -2,13 +2,16 @@
 
 namespace Kitpages\DataGridBundle\Grid;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\QueryBuilder;
 use Kitpages\DataGridBundle\BundleOrmTestCase;
 use Kitpages\DataGridBundle\Grid\ItemListNormalizer\StandardNormalizer;
 use Kitpages\DataGridBundle\Hydrators\DataGridHydrator;
 use Kitpages\DataGridBundle\Paginator\PaginatorConfig;
 use Kitpages\DataGridBundle\Paginator\PaginatorManager;
+use Kitpages\DataGridBundle\TestEntities\Node;
+use Kitpages\DataGridBundle\Tool\UrlTool;
 use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -16,9 +19,40 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class GridManagerTest extends BundleOrmTestCase
 {
+    private EventDispatcherInterface $dispatcher;
+    private QueryBuilder $queryBuilder;
+    private GridManager $gridManager;
+
     protected function setUp(): void
     {
         parent::setUp();
+
+        $this->dispatcher = new EventDispatcher();
+
+        $em = $this->getEntityManager();
+        $repository = $em->getRepository(Node::class);
+        $this->queryBuilder = $repository->createQueryBuilder('node');
+
+        $this->gridManager = $this->getGridManager();
+    }
+
+    public function getGridManager(): GridManager
+    {
+        $parameters = [
+            'default_twig' => 'toto.html.twig',
+            'item_count_in_page' => 50,
+            'visible_page_count_in_paginator' => 5,
+        ];
+
+        // normalizer
+        $normalizer = new StandardNormalizer();
+
+        return new GridManager(
+            $this->dispatcher,
+            new PaginatorManager($this->dispatcher, $parameters),
+            $normalizer,
+            DataGridHydrator::class
+        );
     }
 
     protected function tearDown(): void
@@ -29,13 +63,11 @@ class GridManagerTest extends BundleOrmTestCase
     public function initGridConfig(): GridConfig
     {
         // configure paginator
-        $paginatorConfig = new PaginatorConfig();
-        $paginatorConfig->setCountFieldName('node.id');
+        $paginatorConfig = new PaginatorConfig($this->queryBuilder, 'node.id');
         $paginatorConfig->setItemCountInPage(3);
 
-        $gridConfig = new GridConfig();
+        $gridConfig = new GridConfig($this->queryBuilder, 'node.id');
         $gridConfig->setPaginatorConfig($paginatorConfig);
-        $gridConfig->setCountFieldName('node.id');
         $gridConfig
             ->addField(new Field('node.id'))
             ->addField(new Field(
@@ -62,40 +94,17 @@ class GridManagerTest extends BundleOrmTestCase
         return $gridConfig;
     }
 
-    public function getGridManager(): GridManager
-    {
-        // create EventDispatcher mock
-        $service = new EventDispatcher();
-        $parameters = [
-            'default_twig' => 'toto.html.twig',
-            'item_count_in_page' => 50,
-            'visible_page_count_in_paginator' => 5,
-        ];
-
-        // normalizer
-        $normalizer = new StandardNormalizer();
-
-        $gridManager = new GridManager($service, new PaginatorManager($service, $parameters), $normalizer, DataGridHydrator::class);
-
-        return $gridManager;
-    }
-
     public function testGridBasic(): void
     {
         // create Request mock (ok this is not a mock....)
         $_SERVER['REQUEST_URI'] = '/foo';
         $request = new Request();
-        // create gridManager instance
-        $gridManager = $this->getGridManager();
+        $gridManager = $this->gridManager;
 
         // create queryBuilder
-        $em = $this->getEntityManager();
-        $repository = $em->getRepository('Kitpages\DataGridBundle\TestEntities\Node');
-        $queryBuilder = $repository->createQueryBuilder('node');
-        $queryBuilder->select('node');
+        $this->queryBuilder->select('node');
 
-        $gridConfig = new GridConfig();
-        $gridConfig->setCountFieldName('node.id');
+        $gridConfig = new GridConfig($this->queryBuilder, 'node.id');
         $gridConfig->addField(new Field(
             'node.createdAt',
             [
@@ -115,7 +124,6 @@ class GridManagerTest extends BundleOrmTestCase
         ));
 
         // get paginator
-        $gridConfig->setQueryBuilder($queryBuilder);
         $grid = $gridManager->getGrid($gridConfig, $request);
         $paginator = $grid->getPaginator();
 
@@ -131,7 +139,12 @@ class GridManagerTest extends BundleOrmTestCase
         $this->assertEquals('foobar:2010', $grid->displayGridValue($itemList[0], $gridConfig->getFieldByName('node.content')));
 
         // test $grid given in parameter
-        $myCustomGrid = new CustomGrid();
+        $myCustomGrid = new CustomGrid(
+            new UrlTool(),
+            $request->getUri(),
+            $this->dispatcher,
+            $gridConfig
+        );
         $myCustomGrid->setMyCustomParamter('my parameter value');
         /** @var CustomGrid $grid */
         $grid = $gridManager->getGrid($gridConfig, $request, $myCustomGrid);
@@ -154,22 +167,17 @@ class GridManagerTest extends BundleOrmTestCase
     public function testGridRelation(): void
     {
         // create Request mock (ok this is not a mock....)
-        $request = new \Symfony\Component\HttpFoundation\Request();
+        $request = new Request();
         $request->query->set('kitdg_paginator_paginator_currentPage', 2);
-        // create gridManager instance
-        $gridManager = $this->getGridManager();
+        $gridManager = $this->gridManager;
 
         // create queryBuilder
-        $em = $this->getEntityManager();
-        $repository = $em->getRepository('Kitpages\DataGridBundle\TestEntities\Node');
-        $queryBuilder = $repository->createQueryBuilder('node');
-        $queryBuilder->select('node, node.id*2 as doubleId');
+        $this->queryBuilder->select('node, node.id*2 as doubleId');
 
         $gridConfig = $this->initGridConfig();
         $gridConfig->addField(new Field('doubleId'));
 
         // get paginator
-        $gridConfig->setQueryBuilder($queryBuilder);
         $grid = $gridManager->getGrid($gridConfig, $request);
         $paginator = $grid->getPaginator();
 
@@ -199,16 +207,12 @@ class GridManagerTest extends BundleOrmTestCase
     public function testGridLeftJoin(): void
     {
         // create Request mock (ok this is not a mock....)
-        $request = new \Symfony\Component\HttpFoundation\Request();
+        $request = new Request();
         $request->query->set('kitdg_paginator_paginator_currentPage', 2);
-        // create gridManager instance
-        $gridManager = $this->getGridManager();
+        $gridManager = $this->gridManager;
 
         // create queryBuilder
-        $em = $this->getEntityManager();
-        $repository = $em->getRepository('Kitpages\DataGridBundle\TestEntities\Node');
-        $queryBuilder = $repository->createQueryBuilder('node');
-        $queryBuilder->select('DISTINCT node.id as gouglou, node, count(sn.id) as intervals')
+        $this->queryBuilder->select('DISTINCT node.id as gouglou, node, count(sn.id) as intervals')
             ->leftJoin('node.subNodeList', 'sn')
             ->groupBy('node.id')
             ->orderBy('node.id', 'ASC');
@@ -217,7 +221,6 @@ class GridManagerTest extends BundleOrmTestCase
         $gridConfig->addField(new Field('doubleId'));
 
         // get paginator
-        $gridConfig->setQueryBuilder($queryBuilder);
         $grid = $gridManager->getGrid($gridConfig, $request);
         $paginator = $grid->getPaginator();
 
@@ -237,17 +240,12 @@ class GridManagerTest extends BundleOrmTestCase
     public function testGridLeftJoinGroupBy(): void
     {
         // create Request mock (ok this is not a mock....)
-        $request = new \Symfony\Component\HttpFoundation\Request();
+        $request = new Request();
         $request->query->set('kitdg_paginator_paginator_currentPage', 1);
-        // create gridManager instance
-        $gridManager = $this->getGridManager();
-
-        $em = $this->getEntityManager();
+        $gridManager = $this->gridManager;
 
         // create queryBuilder
-        $repository = $em->getRepository('Kitpages\DataGridBundle\TestEntities\Node');
-        $queryBuilder = $repository->createQueryBuilder('node');
-        $queryBuilder->select('node, assoc, count(sn.id) as intervals')
+        $this->queryBuilder->select('node, assoc, count(sn.id) as intervals')
             ->leftJoin('node.assoc', 'assoc')
             ->leftJoin('node.subNodeList', 'sn')
             ->groupBy('node.id')
@@ -258,7 +256,6 @@ class GridManagerTest extends BundleOrmTestCase
         $gridConfig->addField(new Field('assoc.id'));
 
         // get paginator
-        $gridConfig->setQueryBuilder($queryBuilder);
         $grid = $gridManager->getGrid($gridConfig, $request);
 
         // grid test
@@ -283,18 +280,14 @@ class GridManagerTest extends BundleOrmTestCase
     public function testGridLeftJoinWithoutGroupBy(): void
     {
         // create Request mock (ok this is not a mock....)
-        $request = new \Symfony\Component\HttpFoundation\Request();
-        // create gridManager instance
-        $gridManager = $this->getGridManager();
+        $request = new Request();
+        $gridManager = $this->gridManager;
 
         // create queryBuilder
-        /** @var EntityManager $em */
         $em = $this->getEntityManager();
-//        $repository = $em->getRepository('Kitpages\DataGridBundle\TestEntities\Node');
-//        $queryBuilder = $repository->createQueryBuilder("node");
         $queryBuilder = $em->createQueryBuilder();
         $queryBuilder->select('node, mn')
-            ->from('Kitpages\DataGridBundle\TestEntities\Node', 'node')
+            ->from(Node::class, 'node')
             ->leftJoin('node.mainNode', 'mn')
             ->orderBy('node.id', 'ASC');
 
@@ -349,23 +342,19 @@ class GridManagerTest extends BundleOrmTestCase
     public function testGridFilter(): void
     {
         // create Request mock (ok this is not a mock....)
-        $request = new \Symfony\Component\HttpFoundation\Request();
+        $request = new Request();
         $request->query->set('kitdg_grid_grid_filter', 'foouser');
         $request->query->set('kitdg_grid_grid_sort_field', 'node.createdAt');
         $request->query->set('kitdg_paginator_paginator_currentPage', 2);
-        // create gridManager instance
-        $gridManager = $this->getGridManager();
+        $gridManager = $this->gridManager;
 
         // create queryBuilder
-        $em = $this->getEntityManager();
-        $repository = $em->getRepository('Kitpages\DataGridBundle\TestEntities\Node');
-        $queryBuilder = $repository->createQueryBuilder('node');
-        $queryBuilder->select('node');
+        $this->queryBuilder->select('node');
 
         $gridConfig = $this->initGridConfig();
 
         // get paginator
-        $gridConfig->setQueryBuilder($queryBuilder);
+        $gridConfig->setQueryBuilder($this->queryBuilder);
         $grid = $gridManager->getGrid($gridConfig, $request);
         $paginator = $grid->getPaginator();
 
@@ -379,13 +368,13 @@ class GridManagerTest extends BundleOrmTestCase
         $this->assertEquals(1, $paginator->getCurrentPage());
 
         $request->query->set('kitdg_grid_grid_sort_field', 'node.user');
-        $gridConfig->setQueryBuilder($queryBuilder);
+        $gridConfig->setQueryBuilder($this->queryBuilder);
         $grid = $gridManager->getGrid($gridConfig, $request);
         $itemList = $grid->getItemList();
         $this->assertEquals(6, $itemList[0]['node.id']);
 
         $request->query->set('kitdg_grid_grid_filter', 'foo');
-        $gridConfig->setQueryBuilder($queryBuilder);
+        $gridConfig->setQueryBuilder($this->queryBuilder);
         $grid = $gridManager->getGrid($gridConfig, $request);
         $itemList = $grid->getItemList();
         $this->assertCount(3, $itemList);
@@ -394,23 +383,18 @@ class GridManagerTest extends BundleOrmTestCase
     public function testGridUtf8Filter(): void
     {
         // create Request mock (ok this is not a mock....)
-        $request = new \Symfony\Component\HttpFoundation\Request();
+        $request = new Request();
         $request->query->set('kitdg_grid_grid_filter', 'foouser');
         $request->query->set('kitdg_grid_grid_sort_field', 'node.createdAt');
         $request->query->set('kitdg_paginator_paginator_currentPage', 2);
-        // create gridManager instance
-        $gridManager = $this->getGridManager();
+        $gridManager = $this->gridManager;
 
         // create queryBuilder
-        $em = $this->getEntityManager();
-        $repository = $em->getRepository('Kitpages\DataGridBundle\TestEntities\Node');
-        $queryBuilder = $repository->createQueryBuilder('node');
-        $queryBuilder->select('node');
+        $this->queryBuilder->select('node');
 
         $gridConfig = $this->initGridConfig();
 
         // get paginator
-        $gridConfig->setQueryBuilder($queryBuilder);
         $grid = $gridManager->getGrid($gridConfig, $request);
         $paginator = $grid->getPaginator();
 
@@ -424,7 +408,6 @@ class GridManagerTest extends BundleOrmTestCase
         $this->assertEquals(1, $paginator->getCurrentPage());
 
         $request->query->set('kitdg_grid_grid_filter', 'fös');
-        $gridConfig->setQueryBuilder($queryBuilder);
         $grid = $gridManager->getGrid($gridConfig, $request);
         $itemList = $grid->getItemList();
         $this->assertCount(1, $itemList);
@@ -433,24 +416,19 @@ class GridManagerTest extends BundleOrmTestCase
     public function testGridSelector(): void
     {
         // create Request mock (ok this is not a mock....)
-        $request = new \Symfony\Component\HttpFoundation\Request();
+        $request = new Request();
         $request->query->set('kitdg_grid_grid_selector_field', 'node.user');
         $request->query->set('kitdg_grid_grid_selector_value', 'foouser');
         $request->query->set('kitdg_grid_grid_sort_field', 'node.createdAt');
         $request->query->set('kitdg_paginator_paginator_currentPage', 2);
-        // create gridManager instance
-        $gridManager = $this->getGridManager();
+        $gridManager = $this->gridManager;
 
         // create queryBuilder
-        $em = $this->getEntityManager();
-        $repository = $em->getRepository('Kitpages\DataGridBundle\TestEntities\Node');
-        $queryBuilder = $repository->createQueryBuilder('node');
-        $queryBuilder->select('node');
+        $this->queryBuilder->select('node');
 
         $gridConfig = $this->initGridConfig();
 
         // get paginator
-        $gridConfig->setQueryBuilder($queryBuilder);
         $grid = $gridManager->getGrid($gridConfig, $request);
         $paginator = $grid->getPaginator();
 
@@ -464,13 +442,11 @@ class GridManagerTest extends BundleOrmTestCase
         $this->assertEquals(1, $paginator->getCurrentPage());
 
         $request->query->set('kitdg_grid_grid_sort_field', 'node.user');
-        $gridConfig->setQueryBuilder($queryBuilder);
         $grid = $gridManager->getGrid($gridConfig, $request);
         $itemList = $grid->getItemList();
         $this->assertEquals(6, $itemList[0]['node.id']);
 
         $request->query->set('kitdg_grid_grid_selector_value', '5');
-        $gridConfig->setQueryBuilder($queryBuilder);
         $grid = $gridManager->getGrid($gridConfig, $request);
         $itemList = $grid->getItemList();
         $this->assertCount(0, $itemList);

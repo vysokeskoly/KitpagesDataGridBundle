@@ -33,6 +33,7 @@ class PaginatorManager
     public function getPaginator(PaginatorConfig $paginatorConfig, Request $request): Paginator
     {
         $queryBuilder = $paginatorConfig->getQueryBuilder();
+
         // insert default values in paginator config
         $paginatorConfig = clone ($paginatorConfig);
         if ($paginatorConfig->getItemCountInPage() === null) {
@@ -43,10 +44,7 @@ class PaginatorManager
         }
 
         // create paginator object
-        $paginator = new Paginator();
-        $paginator->setPaginatorConfig($paginatorConfig);
-        $paginator->setUrlTool(new UrlTool());
-        $paginator->setRequestUri($request->getRequestUri());
+        $paginator = new Paginator($paginatorConfig, new UrlTool(), $request->getRequestUri());
 
         // get currentPage
         $paginator->setCurrentPage($request->query->getInt($paginatorConfig->getRequestQueryName('currentPage'), 1));

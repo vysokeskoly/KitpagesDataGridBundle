@@ -11,23 +11,31 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Grid
 {
-    protected ?Paginator $paginator = null;
-    protected ?GridConfig $gridConfig = null;
+    protected Paginator $paginator;
+    protected GridConfig $gridConfig;
     protected array $itemList = [];
-    protected ?UrlTool $urlTool = null;
-    protected ?string $requestUri = null;
+    protected UrlTool $urlTool;
+    protected string $requestUri;
     protected ?string $filterValue = null;
     protected ?string $sortField = null;
-    protected ?string $sortOrder = null;
+    protected string $sortOrder = 'ASC';
     protected bool $debugMode = false;
-    protected ?EventDispatcherInterface $dispatcher = null;
+    protected EventDispatcherInterface $dispatcher;
     protected ?string $selectorField = null;
     protected ?string $selectorValue = null;
     protected ?string $requestCurrentRoute = null;
     protected array $requestCurrentRouteParams = [];
 
-    public function __construct()
-    {
+    public function __construct(
+        UrlTool $urlTool,
+        string $requestUri,
+        EventDispatcherInterface $dispatcher,
+        GridConfig $gridConfig
+    ) {
+        $this->urlTool = $urlTool;
+        $this->requestUri = $requestUri;
+        $this->dispatcher = $dispatcher;
+        $this->gridConfig = $gridConfig;
     }
 
     public function getSelectorUrl(string $selectorField, string $selectorValue): string
@@ -232,7 +240,7 @@ class Grid
         $this->requestUri = $requestUri;
     }
 
-    public function getRequestCurrentRoute(): string
+    public function getRequestCurrentRoute(): ?string
     {
         return $this->requestCurrentRoute;
     }
@@ -257,22 +265,22 @@ class Grid
         return $this->requestUri;
     }
 
-    public function setFilterValue(string $filterValue): void
+    public function setFilterValue(?string $filterValue): void
     {
         $this->filterValue = $filterValue;
     }
 
-    public function getFilterValue(): string
+    public function getFilterValue(): ?string
     {
         return $this->filterValue;
     }
 
-    public function setSortField(string $sortField): void
+    public function setSortField(?string $sortField): void
     {
         $this->sortField = $sortField;
     }
 
-    public function getSortField(): string
+    public function getSortField(): ?string
     {
         return $this->sortField;
     }
@@ -287,22 +295,22 @@ class Grid
         return $this->sortOrder;
     }
 
-    public function setSelectorField(string $selectorField): void
+    public function setSelectorField(?string $selectorField): void
     {
         $this->selectorField = $selectorField;
     }
 
-    public function getSelectorField(): string
+    public function getSelectorField(): ?string
     {
         return $this->selectorField;
     }
 
-    public function setSelectorValue(string $selectorValue): void
+    public function setSelectorValue(?string $selectorValue): void
     {
         $this->selectorValue = $selectorValue;
     }
 
-    public function getSelectorValue(): string
+    public function getSelectorValue(): ?string
     {
         return $this->selectorValue;
     }

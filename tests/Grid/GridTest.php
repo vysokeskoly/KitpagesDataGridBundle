@@ -2,6 +2,7 @@
 
 namespace Kitpages\DataGridBundle\Grid;
 
+use Kitpages\DataGridBundle\Tool\UrlTool;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -18,7 +19,12 @@ class GridTest extends TestCase
     {
         $dispatcher = new EventDispatcher();
 
-        $this->grid = new Grid();
+        $this->grid = new Grid(
+            new UrlTool(),
+            '',
+            $dispatcher,
+            $this->createMock(GridConfig::class)
+        );
         $this->grid->setDispatcher($dispatcher);
         $this->now = new \DateTime();
         $this->row = [
@@ -30,12 +36,6 @@ class GridTest extends TestCase
         $this->mockField = $this->getMockBuilder(Field::class)
             ->disableOriginalConstructor()
             ->getMock();
-    }
-
-    public function testConstructor(): void
-    {
-        $grid = new Grid();
-        $this->assertTrue($grid instanceof Grid);
     }
 
     public function testDisplayGridValue(): void

@@ -60,14 +60,21 @@ class GridManager
 
         // create grid objet
         if ($grid === null) {
-            $grid = new Grid();
+            $grid = new Grid(
+                new UrlTool(),
+                $request->getRequestUri(),
+                $this->dispatcher,
+                $gridConfig
+            );
+        } else {
+            $grid->setGridConfig($gridConfig);
+            $grid->setUrlTool(new UrlTool());
+            $grid->setRequestUri($request->getRequestUri());
+            $grid->setDispatcher($this->dispatcher);
         }
-        $grid->setGridConfig($gridConfig);
-        $grid->setUrlTool(new UrlTool());
-        $grid->setRequestUri($request->getRequestUri());
+
         $grid->setRequestCurrentRoute($request->attributes->get('_route'));
         $grid->setRequestCurrentRouteParams($request->attributes->get('_route_params') ?? []);
-        $grid->setDispatcher($this->dispatcher);
 
         // create base request
         $gridQueryBuilder = clone ($queryBuilder);
@@ -89,14 +96,12 @@ class GridManager
         // build paginator
         $paginatorConfig = $gridConfig->getPaginatorConfig();
         if ($paginatorConfig === null) {
-            $paginatorConfig = new PaginatorConfig();
-            $paginatorConfig->setCountFieldName($gridConfig->getCountFieldName());
+            $paginatorConfig = new PaginatorConfig($gridQueryBuilder, $gridConfig->getCountFieldName());
             $paginatorConfig->setName($gridConfig->getName());
+        } else {
             $paginatorConfig->setQueryBuilder($gridQueryBuilder);
         }
-        if ($paginatorConfig->getQueryBuilder() === null) {
-            $paginatorConfig->setQueryBuilder($gridQueryBuilder);
-        }
+
         $paginator = $this->paginatorManager->getPaginator($paginatorConfig, $request);
         $grid->setPaginator($paginator);
 
