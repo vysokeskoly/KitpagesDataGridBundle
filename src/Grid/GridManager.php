@@ -155,7 +155,7 @@ class GridManager
             $filterRequestList = [];
             foreach ($fieldList as $field) {
                 if ($field->getFilterable()) {
-                    $filterRequestList[] = $queryBuilder->expr()->like($field->getFieldName(), ':filter');
+                    $filterRequestList[] = $queryBuilder->expr()->like(sprintf('lower(%s)', $field->getFieldName()), 'lower(:filter)');
                 }
             }
             if (count($filterRequestList) > 0) {
