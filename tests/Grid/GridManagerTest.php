@@ -451,4 +451,23 @@ class GridManagerTest extends BundleOrmTestCase
         $itemList = $grid->getItemList();
         $this->assertCount(0, $itemList);
     }
+
+    public function testShouldConfigureDefaultPaginator(): void
+    {
+        $request = new Request();
+        $configurePaginator = fn (PaginatorConfig $config) => $config->setItemCountInPage(100);
+
+        $gridConfig = new GridConfig($this->queryBuilder, 'node.id');
+        $gridConfig->setConfigurePaginator($configurePaginator);
+
+        $this->assertNull($gridConfig->getPaginatorConfig());
+
+        $grid = $this->gridManager->getGrid($gridConfig, $request);
+
+        $this->assertNull($gridConfig->getPaginatorConfig());
+
+        $paginator = $grid->getPaginator();
+
+        $this->assertSame(100, $paginator->getPaginatorConfig()->getItemCountInPage());
+    }
 }

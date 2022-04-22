@@ -102,7 +102,9 @@ class GridManager
             $paginatorConfig->setQueryBuilder($gridQueryBuilder);
         }
 
-        $paginator = $this->paginatorManager->getPaginator($paginatorConfig, $request);
+        $paginator = $this->paginatorManager
+            ->setConfigurePaginator($gridConfig->getConfigurePaginator())
+            ->getPaginator($paginatorConfig, $request);
         $grid->setPaginator($paginator);
 
         // calculate limits

@@ -14,6 +14,12 @@ class GridConfig
 
     protected ?PaginatorConfig $paginatorConfig = null;
 
+    /**
+     * @phpstan-var callable(PaginatorConfig): PaginatorConfig
+     * @var callable|null
+     */
+    protected $configurePaginator;
+
     /** @var Field[] */
     protected array $fieldList = [];
 
@@ -88,6 +94,23 @@ class GridConfig
     public function getPaginatorConfig(): ?PaginatorConfig
     {
         return $this->paginatorConfig;
+    }
+
+    /** @phpstan-param callable(PaginatorConfig): PaginatorConfig $configurePaginator */
+    public function setConfigurePaginator(callable $configurePaginator): self
+    {
+        if ($this->configurePaginator !== null) {
+            throw new \InvalidArgumentException('Only one configure paginator callback can be set. Do all configuration in that one callback.');
+        }
+        $this->configurePaginator = $configurePaginator;
+
+        return $this;
+    }
+
+    /** @phpstan-return null|callable(PaginatorConfig): PaginatorConfig */
+    public function getConfigurePaginator(): ?callable
+    {
+        return $this->configurePaginator;
     }
 
     /**

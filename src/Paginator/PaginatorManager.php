@@ -12,8 +12,12 @@ use Symfony\Component\HttpFoundation\Request;
 class PaginatorManager
 {
     protected EventDispatcherInterface $dispatcher;
-
     protected array $paginatorParameterList;
+    /**
+     * @phpstan-var null|callable(PaginatorConfig): PaginatorConfig
+     * @var callable|null
+     */
+    protected $configurePaginator;
 
     /**
      * @param mixed $paginatorParameterList
@@ -26,12 +30,39 @@ class PaginatorManager
         $this->paginatorParameterList = $paginatorParameterList;
     }
 
+    /** @phpstan-param null|callable(PaginatorConfig): PaginatorConfig $configurePaginator */
+    public function setConfigurePaginator(?callable $configurePaginator): self
+    {
+        if ($this->configurePaginator !== null) {
+            throw new \InvalidArgumentException('Only one configure paginator callback can be set. Do all configuration in that one callback.');
+        }
+
+        $this->configurePaginator = $configurePaginator;
+
+        return $this;
+    }
+
     ////
     // paginator
     ////
 
     public function getPaginator(PaginatorConfig $paginatorConfig, Request $request): Paginator
     {
+        if (is_callable($this->configurePaginator)) {
+            $configuredPaginator = call_user_func($this->configurePaginator, $paginatorConfig);
+
+            if ($configuredPaginator instanceof PaginatorConfig) {
+                $paginatorConfig = $configuredPaginator;
+            } else {
+                throw new \LogicException(
+                    sprintf(
+                        'Configure Paginator function return %s instead of a PaginatorConfig.',
+                        gettype($configuredPaginator),
+                    )
+                );
+            }
+        }
+
         $queryBuilder = $paginatorConfig->getQueryBuilder();
 
         // insert default values in paginator config
