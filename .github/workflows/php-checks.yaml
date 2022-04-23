@@ -1,49 +1,82 @@
-name: PHP - Checks
+name: Tests and linting
 
 on:
-    #push:
+    push:
     pull_request:
-    #schedule:
-    #    -   cron:  '0 3 * * *'
+    schedule:
+        - cron:  '0 3 * * *'
 
 jobs:
-    checks:
+    unit-tests:
         runs-on: ubuntu-latest
-        name: PHP 7.4 - checks
+
+        strategy:
+            matrix:
+                php-version: ['7.4', '8.0', '8.1']
+                dependencies: ['']
+                include:
+                    - { php-version: '7.4', dependencies: '--prefer-lowest --prefer-stable' }
+
+        name: Unit tests - PHP ${{ matrix.php-version }} ${{ matrix.dependencies }}
+
         steps:
-            # Setup
-            -   uses: actions/checkout@v2
+            - uses: actions/checkout@v2
 
-            -   name: '[PHP] Setup'
-                uses: shivammathur/setup-php@v2
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php-version }}
+                  extensions: mbstring, intl, zip
+                  coverage: xdebug
+                  tools: composer:v2
+
+            - name: Install dependencies
+              run: composer update --no-interaction ${{ matrix.dependencies }}
+
+            - name: Run tests
+              env:
+                  COLUMNS: 120
+              run: |
+                  composer tests-ci
+
+            - name: Submit coverage to Coveralls
+              env:
+                  COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  COVERALLS_PARALLEL: true
+                  COVERALLS_FLAG_NAME: ${{ github.job }}-PHP-${{ matrix.php-version }} ${{ matrix.dependencies }}
+              run: |
+                  composer global require php-coveralls/php-coveralls
+                  ~/.composer/vendor/bin/php-coveralls --coverage_clover=./reports/clover.xml --json_path=./reports/coveralls-upload.json -v
+
+    finish-tests:
+        name: Tests finished
+        needs: [ unit-tests ]
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Notify Coveralls
+                uses: coverallsapp/github-action@master
                 with:
-                    php-version: 7.4
-                    extensions: mbstring, intl
+                    github-token: ${{ secrets.GITHUB_TOKEN }}
+                    parallel-finished: true
 
-            # Prepare application
-            -   name: '[INIT] Check composer.json'
-                run: composer validate --no-check-all --no-check-publish --no-check-lock
+    codestyle:
+        name: "Code style and static analysis"
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
 
-            -   name: '[INIT] Install dependencies'
-                run: composer update --prefer-dist --no-progress
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '7.4'
+                  extensions: mbstring, intl
+                  tools: composer:v2
 
-            # Check application
-            -   name: '[CHECK] codestyle'
-                run: composer cs
+            - name: Install dependencies
+              run: composer update --no-interaction --no-progress
 
-            -   name: '[CHECK] phpstan'
-                run: composer phpstan
+            - name: Run lints
+              run: composer lint
 
-            -   name: '[CHECK] Unit tests'
-                run: composer tests
-
-            # Check lowest dependencies
-            -   name: '[INIT-LOWEST] Install dependencies'
-                run: composer update --prefer-lowest --prefer-dist --no-progress
-
-            # Check application
-            -   name: '[CHECK-LOWEST] Phpstan'
-                run: composer tests
-
-            -   name: '[CHECK-LOWEST] Unit tests'
-                run: composer tests
+            - name: Run checks
+              run: composer analyze
