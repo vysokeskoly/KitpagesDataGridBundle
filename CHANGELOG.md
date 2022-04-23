@@ -2,6 +2,8 @@ Changelog
 =========
 
 ## Unreleased
+
+## 5.0.0 - 2022-04-23
 - Filter fields in case-insensitive mode
 - [**BC**] Fix nullable types
 - [**BC**] Require mandatory parameters in constructor
