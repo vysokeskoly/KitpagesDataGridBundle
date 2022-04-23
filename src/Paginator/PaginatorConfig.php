@@ -7,10 +7,16 @@ use Doctrine\ORM\QueryBuilder;
 class PaginatorConfig
 {
     protected string $name = 'paginator';
-    protected ?QueryBuilder $queryBuilder = null;
+    protected QueryBuilder $queryBuilder;
+    protected string $countFieldName;
     protected ?int $itemCountInPage = null;
     protected ?int $visiblePageCountInPaginator = null;
-    protected ?string $countFieldName = null;
+
+    public function __construct(QueryBuilder $queryBuilder, string $countFieldName)
+    {
+        $this->queryBuilder = $queryBuilder;
+        $this->countFieldName = $countFieldName;
+    }
 
     public function getRequestQueryName(string $key): string
     {
@@ -47,9 +53,6 @@ class PaginatorConfig
         return $this->name;
     }
 
-    /**
-     * @return PaginatorConfig Fluent interface
-     */
     public function setQueryBuilder(QueryBuilder $queryBuilder): self
     {
         $this->queryBuilder = $queryBuilder;
@@ -57,7 +60,7 @@ class PaginatorConfig
         return $this;
     }
 
-    public function getQueryBuilder(): ?\Doctrine\ORM\QueryBuilder
+    public function getQueryBuilder(): QueryBuilder
     {
         return $this->queryBuilder;
     }
@@ -75,16 +78,6 @@ class PaginatorConfig
     public function getVisiblePageCountInPaginator(): ?int
     {
         return $this->visiblePageCountInPaginator;
-    }
-
-    /**
-     * @return PaginatorConfig Fluent interface
-     */
-    public function setCountFieldName(string $countFieldName): self
-    {
-        $this->countFieldName = $countFieldName;
-
-        return $this;
     }
 
     public function getCountFieldName(): string

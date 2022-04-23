@@ -46,12 +46,10 @@ class PaginatorManagerTest extends BundleOrmTestCase
         $paginatorManager = $this->getPaginatorManager();
 
         // configure paginator
-        $paginatorConfig = new PaginatorConfig();
-        $paginatorConfig->setCountFieldName('node.id');
+        $paginatorConfig = new PaginatorConfig($queryBuilder, 'node.id');
         $paginatorConfig->setItemCountInPage(3);
 
         // get paginator
-        $paginatorConfig->setQueryBuilder($queryBuilder);
         $paginator = $paginatorManager->getPaginator($paginatorConfig, $request);
 
         // tests
@@ -84,12 +82,10 @@ class PaginatorManagerTest extends BundleOrmTestCase
         $paginatorManager = $this->getPaginatorManager();
 
         // configure paginator
-        $paginatorConfig = new PaginatorConfig();
-        $paginatorConfig->setCountFieldName('node.user');
+        $paginatorConfig = new PaginatorConfig($queryBuilder, 'node.user');
         $paginatorConfig->setItemCountInPage(3);
 
         // get paginator
-        $paginatorConfig->setQueryBuilder($queryBuilder);
         $paginator = $paginatorManager->getPaginator($paginatorConfig, $request);
 
         // tests

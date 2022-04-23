@@ -2,6 +2,8 @@
 
 namespace Kitpages\DataGridBundle\Grid;
 
+use Doctrine\ORM\QueryBuilder;
+use Kitpages\DataGridBundle\Paginator\PaginatorConfig;
 use PHPUnit\Framework\TestCase;
 
 class GridConfigTest extends TestCase
@@ -10,23 +12,26 @@ class GridConfigTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->gridConfig = new GridConfig();
+        $this->gridConfig = new GridConfig(
+            $this->createMock(QueryBuilder::class),
+            'node.id'
+        );
 
         parent::setUp();
     }
 
     public function testCanAddAndRetrieveSingleFieldLegacySyntax(): void
     {
-        $fieldName = uniqid();
+        $fieldName = uniqid('', true);
 
         $this->gridConfig->addField(new Field($fieldName));
 
-        $this->assertInstanceOf('Kitpages\DataGridBundle\Grid\Field', $this->gridConfig->getFieldByName($fieldName));
+        $this->assertInstanceOf(Field::class, $this->gridConfig->getFieldByName($fieldName));
     }
 
     public function testCanAddAndRetrieveSingleFieldNewSyntax(): void
     {
-        $fieldName = uniqid();
+        $fieldName = uniqid('', true);
         $this->gridConfig->addField($fieldName, [
             'label' => $fieldName,
         ]);
@@ -66,5 +71,15 @@ class GridConfigTest extends TestCase
         $this->assertCount(0, $this->gridConfig->getFieldListByTag('gloubi'));
         $field = $this->gridConfig->getFieldListByTag('biz')[0];
         $this->assertEquals('f3', $field->getFieldName());
+    }
+
+    public function testShouldConfigurePaginator(): void
+    {
+        $configurePaginator = fn (PaginatorConfig $config) => $config->setItemCountInPage(100);
+
+        $this->gridConfig->setConfigurePaginator($configurePaginator);
+
+        $this->assertNull($this->gridConfig->getPaginatorConfig());
+        $this->assertSame($configurePaginator, $this->gridConfig->getConfigurePaginator());
     }
 }

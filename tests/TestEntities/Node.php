@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\Collection;
 
 class Node
 {
-    protected int $id;
+    protected ?int $id = null;
     protected ?string $user = null;
     protected ?string $content = null;
     protected \DateTime $createdAt;
@@ -22,14 +22,14 @@ class Node
         $this->subNodeList = new ArrayCollection();
     }
 
-    public function setId(?int $id): self
+    public function setId(int $id): self
     {
         $this->id = $id;
 
         return $this;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

@@ -6,6 +6,9 @@ use Kitpages\DataGridBundle\Tool\UrlTool;
 
 class Paginator
 {
+    protected UrlTool $urlTool;
+    protected PaginatorConfig $paginatorConfig;
+    protected string $requestUri;
     protected ?int $totalPageCount = null;
     protected ?int $minPage = null;
     protected ?int $maxPage = null;
@@ -13,9 +16,13 @@ class Paginator
     protected ?int $previousButtonPage = null;
     protected int $totalItemCount = 0;
     protected int $currentPage = 1;
-    protected ?UrlTool $urlTool = null;
-    protected ?PaginatorConfig $paginatorConfig = null;
-    protected ?string $requestUri = null;
+
+    public function __construct(PaginatorConfig $paginatorConfig, UrlTool $urlTool, string $requestUri)
+    {
+        $this->paginatorConfig = $paginatorConfig;
+        $this->urlTool = $urlTool;
+        $this->requestUri = $requestUri;
+    }
 
     public function getPageRange(): array
     {
@@ -77,12 +84,12 @@ class Paginator
         return $this->previousButtonPage;
     }
 
-    public function setTotalItemCount(?int $totalItemCount): void
+    public function setTotalItemCount(int $totalItemCount): void
     {
         $this->totalItemCount = $totalItemCount;
     }
 
-    public function getTotalItemCount(): ?int
+    public function getTotalItemCount(): int
     {
         return $this->totalItemCount;
     }
@@ -107,29 +114,14 @@ class Paginator
         return $this->currentPage;
     }
 
-    public function setUrlTool(UrlTool $urlTool): void
-    {
-        $this->urlTool = $urlTool;
-    }
-
     public function getUrlTool(): UrlTool
     {
         return $this->urlTool;
     }
 
-    public function setPaginatorConfig(PaginatorConfig $paginatorConfig): void
-    {
-        $this->paginatorConfig = $paginatorConfig;
-    }
-
     public function getPaginatorConfig(): PaginatorConfig
     {
         return $this->paginatorConfig;
-    }
-
-    public function setRequestUri(string $requestUri): void
-    {
-        $this->requestUri = $requestUri;
     }
 
     public function getRequestUri(): string

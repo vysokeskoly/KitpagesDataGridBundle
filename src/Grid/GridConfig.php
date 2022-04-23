@@ -9,8 +9,16 @@ use SebastianBergmann\CodeCoverage\Driver\Selector;
 class GridConfig
 {
     protected string $name = 'grid';
-    protected ?QueryBuilder $queryBuilder = null;
+    protected QueryBuilder $queryBuilder;
+    protected string $countFieldName;
+
     protected ?PaginatorConfig $paginatorConfig = null;
+
+    /**
+     * @phpstan-var callable(PaginatorConfig): PaginatorConfig
+     * @var callable|null
+     */
+    protected $configurePaginator;
 
     /** @var Field[] */
     protected array $fieldList = [];
@@ -18,7 +26,11 @@ class GridConfig
     /** @var Selector[] */
     protected array $selectorList = [];
 
-    protected ?string $countFieldName = null;
+    public function __construct(QueryBuilder $queryBuilder, string $countFieldName)
+    {
+        $this->queryBuilder = $queryBuilder;
+        $this->countFieldName = $countFieldName;
+    }
 
     /**
      * @param Field|string $field
@@ -57,9 +69,6 @@ class GridConfig
         return $this->name;
     }
 
-    /**
-     * @return GridConfig Fluent interface
-     */
     public function setQueryBuilder(QueryBuilder $queryBuilder): self
     {
         $this->queryBuilder = $queryBuilder;
@@ -67,7 +76,7 @@ class GridConfig
         return $this;
     }
 
-    public function getQueryBuilder(): ?\Doctrine\ORM\QueryBuilder
+    public function getQueryBuilder(): QueryBuilder
     {
         return $this->queryBuilder;
     }
@@ -85,6 +94,23 @@ class GridConfig
     public function getPaginatorConfig(): ?PaginatorConfig
     {
         return $this->paginatorConfig;
+    }
+
+    /** @phpstan-param callable(PaginatorConfig): PaginatorConfig $configurePaginator */
+    public function setConfigurePaginator(callable $configurePaginator): self
+    {
+        if ($this->configurePaginator !== null) {
+            throw new \InvalidArgumentException('Only one configure paginator callback can be set. Do all configuration in that one callback.');
+        }
+        $this->configurePaginator = $configurePaginator;
+
+        return $this;
+    }
+
+    /** @phpstan-return null|callable(PaginatorConfig): PaginatorConfig */
+    public function getConfigurePaginator(): ?callable
+    {
+        return $this->configurePaginator;
     }
 
     /**
@@ -105,7 +131,7 @@ class GridConfig
     /**
      * Returns the field corresponding to the name
      */
-    public function getFieldByName(string $name): ?Field
+    public function getFieldByName(string $name): Field
     {
         foreach ($this->fieldList as $field) {
             if ($field->getFieldName() === $name) {
@@ -113,7 +139,7 @@ class GridConfig
             }
         }
 
-        return null;
+        throw new \InvalidArgumentException(sprintf('There is no defined field by name "%s".', $name));
     }
 
     /**
@@ -131,16 +157,6 @@ class GridConfig
         }
 
         return $matchingFieldList;
-    }
-
-    /**
-     * @return GridConfig Fluent interface
-     */
-    public function setCountFieldName(string $countFieldName): self
-    {
-        $this->countFieldName = $countFieldName;
-
-        return $this;
     }
 
     public function getCountFieldName(): string
