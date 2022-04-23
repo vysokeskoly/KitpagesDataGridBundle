@@ -1,7 +1,10 @@
 KitpagesDataGridBundle
 ========================
 
+[![Latest Stable Version](https://img.shields.io/packagist/v/vysokeskoly/data-grid-bundle.svg)](https://packagist.org/packages/vysokeskoly/data-grid-bundle)
+[![License](https://img.shields.io/packagist/l/vysokeskoly/data-grid-bundle.svg)](https://packagist.org/packages/vysokeskoly/data-grid-bundle)
 [![PHP - Checks](https://github.com/vysokeskoly/KitpagesDataGridBundle/actions/workflows/php-checks.yaml/badge.svg)](https://github.com/vysokeskoly/KitpagesDataGridBundle/actions/workflows/php-checks.yaml)
+[![Coverage Status](https://coveralls.io/repos/github/MortalFlesh/MFCollectionsPHP/badge.svg?branch=master)](https://coveralls.io/github/MortalFlesh/MFCollectionsPHP?branch=master)
 
 This Symfony Bundle is a simple datagrid bundle. It aims to be easy to use and extensible.
 
@@ -62,7 +65,7 @@ Add KitpagesChainBundle in your composer.json
 ```
 {
     "require": {
-        "kitpages/data-grid-bundle": "~2.4" // Use ~2.5 if you use doctrine >= 2.5
+        "vysokeskoly/data-grid-bundle": "^5.0"
     }
 }
 ```
@@ -70,7 +73,7 @@ Add KitpagesChainBundle in your composer.json
 Now tell composer to download the bundle by running the step:
 
 ``` bash
-$ php composer.phar update kitpages/data-grid-bundle
+$ php composer.phar update vysokeskoly/data-grid-bundle
 ```
 
 AppKernel.php
