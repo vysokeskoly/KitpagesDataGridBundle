@@ -21,7 +21,7 @@
     ],
     "homepage": "https://github.com/vysokeskoly/KitpagesDataGridBundle",
     "require": {
-        "php": "^7.4",
+        "php": "^7.4 || ^8.0",
         "ext-pdo": "*",
         "beberlei/assert": "^3.3",
         "doctrine/doctrine-bundle": "^2.5.7",
