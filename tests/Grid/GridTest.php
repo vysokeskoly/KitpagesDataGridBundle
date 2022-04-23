@@ -13,7 +13,7 @@ class GridTest extends TestCase
     private \DateTime $now;
     private array $row;
     /** @var Field|MockObject */
-    private $mockField;
+    private Field $mockField;
 
     protected function setUp(): void
     {
@@ -23,7 +23,7 @@ class GridTest extends TestCase
             new UrlTool(),
             '',
             $dispatcher,
-            $this->createMock(GridConfig::class)
+            $this->createMock(GridConfig::class),
         );
         $this->grid->setDispatcher($dispatcher);
         $this->now = new \DateTime();

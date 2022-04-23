@@ -12,30 +12,22 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class Grid
 {
     protected Paginator $paginator;
-    protected GridConfig $gridConfig;
     protected array $itemList = [];
-    protected UrlTool $urlTool;
-    protected string $requestUri;
     protected ?string $filterValue = null;
     protected ?string $sortField = null;
     protected string $sortOrder = 'ASC';
     protected bool $debugMode = false;
-    protected EventDispatcherInterface $dispatcher;
     protected ?string $selectorField = null;
     protected ?string $selectorValue = null;
     protected ?string $requestCurrentRoute = null;
     protected array $requestCurrentRouteParams = [];
 
     public function __construct(
-        UrlTool $urlTool,
-        string $requestUri,
-        EventDispatcherInterface $dispatcher,
-        GridConfig $gridConfig
+        protected UrlTool $urlTool,
+        protected string $requestUri,
+        protected EventDispatcherInterface $dispatcher,
+        protected GridConfig $gridConfig,
     ) {
-        $this->urlTool = $urlTool;
-        $this->requestUri = $requestUri;
-        $this->dispatcher = $dispatcher;
-        $this->gridConfig = $gridConfig;
     }
 
     public function getSelectorUrl(string $selectorField, string $selectorValue): string
@@ -46,7 +38,7 @@ class Grid
                 [
                     $this->getSelectorFieldFormName() => $selectorField,
                     $this->getSelectorValueFormName() => $selectorValue,
-                ]
+                ],
             );
         } else {
             $uri = $this->urlTool->changeRequestQueryString(
@@ -54,7 +46,7 @@ class Grid
                 [
                     $this->getSelectorFieldFormName() => '',
                     $this->getSelectorValueFormName() => '',
-                ]
+                ],
             );
         }
 
@@ -66,7 +58,7 @@ class Grid
         $uri = $this->urlTool->changeRequestQueryString(
             $this->requestUri,
             $this->getSortFieldFormName(),
-            $fieldName
+            $fieldName,
         );
         if ($fieldName == $this->getSortField()) {
             $order = ($this->getSortOrder() === 'ASC') ? 'DESC' : 'ASC';
@@ -77,7 +69,7 @@ class Grid
         return $this->urlTool->changeRequestQueryString(
             $uri,
             $this->getSortOrderFormName(),
-            $order
+            $order,
         );
     }
 
@@ -92,8 +84,7 @@ class Grid
         return $css;
     }
 
-    /** @return mixed */
-    public function displayGridValue(array $row, Field $field)
+    public function displayGridValue(array $row, Field $field): mixed
     {
         $value = null;
         $fieldName = $field->getFieldName();

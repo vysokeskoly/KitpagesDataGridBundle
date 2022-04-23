@@ -6,11 +6,7 @@ use Kitpages\DataGridBundle\DataGridException;
 
 class UrlTool
 {
-    /**
-     * @param string|array $mixedKey
-     * @param mixed $value
-     */
-    public function changeRequestQueryString(string $url, $mixedKey = [], $value = null): string
+    public function changeRequestQueryString(string $url, string|array $mixedKey = [], mixed $value = null): string
     {
         if (is_string($mixedKey)) {
             $changeTab = ["$mixedKey" => $value];

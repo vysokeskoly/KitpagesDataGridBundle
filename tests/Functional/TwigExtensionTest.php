@@ -18,7 +18,7 @@ class TwigExtensionTest extends WebTestCase
         $templating = $client->getContainer()->get('twig');
         $this->assertEquals(
             '@KitpagesDataGrid/Grid/grid-standard.html.twig',
-            $templating->render('globals.html.twig')
+            $templating->render('globals.html.twig'),
         );
     }
 }

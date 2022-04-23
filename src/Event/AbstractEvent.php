@@ -30,20 +30,12 @@ abstract class AbstractEvent extends Event
         return $this->isPropagationStopped;
     }
 
-    /**
-     * @param mixed $key
-     * @param mixed $val
-     */
-    public function set($key, $val): void
+    public function set(mixed $key, mixed $val): void
     {
         $this->data[$key] = $val;
     }
 
-    /**
-     * @param mixed $key
-     * @return mixed
-     */
-    public function get($key)
+    public function get(mixed $key): mixed
     {
         if (!array_key_exists($key, $this->data)) {
             return null;

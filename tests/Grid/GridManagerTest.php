@@ -51,7 +51,7 @@ class GridManagerTest extends BundleOrmTestCase
             $this->dispatcher,
             new PaginatorManager($this->dispatcher, $parameters),
             $normalizer,
-            DataGridHydrator::class
+            DataGridHydrator::class,
         );
     }
 
@@ -77,7 +77,7 @@ class GridManagerTest extends BundleOrmTestCase
                 'formatValueCallback' => function ($value) {
                     return $value->format('Y/m/d');
                 },
-                ]
+                ],
             ));
         $gridConfig->addField(new Field(
             'node.content',
@@ -85,7 +85,7 @@ class GridManagerTest extends BundleOrmTestCase
                 'formatValueCallback' => function ($value, $row) {
                     return $value . ':' . $row['createdAt']->format('Y');
                 },
-            ]
+            ],
         ));
         $gridConfig->addField(new Field('node.user', [
             'filterable' => true,
@@ -112,7 +112,7 @@ class GridManagerTest extends BundleOrmTestCase
                 'formatValueCallback' => function ($value) {
                     return $value->format('Y/m/d');
                 },
-            ]
+            ],
         ));
         $gridConfig->addField(new Field(
             'node.content',
@@ -120,7 +120,7 @@ class GridManagerTest extends BundleOrmTestCase
                 'formatValueCallback' => function ($value, $row) {
                     return $value . ':' . $row['node.createdAt']->format('Y');
                 },
-            ]
+            ],
         ));
 
         // get paginator
@@ -143,7 +143,7 @@ class GridManagerTest extends BundleOrmTestCase
             new UrlTool(),
             $request->getUri(),
             $this->dispatcher,
-            $gridConfig
+            $gridConfig,
         );
         $myCustomGrid->setMyCustomParamter('my parameter value');
         /** @var CustomGrid $grid */

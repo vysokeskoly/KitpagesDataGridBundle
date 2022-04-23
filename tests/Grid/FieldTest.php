@@ -69,7 +69,7 @@ class FieldTest extends TestCase
             [
                 'foo',
                 'bar',
-            ]
+            ],
         );
         $this->assertTrue($field->hasTag('foo'));
         $this->assertFalse($field->hasTag('tutu'));

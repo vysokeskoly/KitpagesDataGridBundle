@@ -9,9 +9,6 @@ use SebastianBergmann\CodeCoverage\Driver\Selector;
 class GridConfig
 {
     protected string $name = 'grid';
-    protected QueryBuilder $queryBuilder;
-    protected string $countFieldName;
-
     protected ?PaginatorConfig $paginatorConfig = null;
 
     /**
@@ -26,25 +23,17 @@ class GridConfig
     /** @var Selector[] */
     protected array $selectorList = [];
 
-    public function __construct(QueryBuilder $queryBuilder, string $countFieldName)
+    public function __construct(protected QueryBuilder $queryBuilder, protected string $countFieldName)
     {
-        $this->queryBuilder = $queryBuilder;
-        $this->countFieldName = $countFieldName;
     }
 
     /**
-     * @param Field|string $field
      * @param string[] $options list of tags
-     * @param mixed $tagList
      *
      * @return GridConfig Fluent interface
      */
-    public function addField($field, array $options = [], $tagList = []): self
+    public function addField(Field|string $field, array $options = [], mixed $tagList = []): self
     {
-        if (!(\is_string($field) || $field instanceof Field)) {
-            throw new \InvalidArgumentException('Argument $field should be string or instance of Kitpages\DataGridBundle\Grid\Field');
-        }
-
         if (\is_string($field)) {
             $field = new Field($field, $options, $tagList);
         }

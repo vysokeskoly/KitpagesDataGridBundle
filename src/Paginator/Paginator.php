@@ -6,9 +6,6 @@ use Kitpages\DataGridBundle\Tool\UrlTool;
 
 class Paginator
 {
-    protected UrlTool $urlTool;
-    protected PaginatorConfig $paginatorConfig;
-    protected string $requestUri;
     protected ?int $totalPageCount = null;
     protected ?int $minPage = null;
     protected ?int $maxPage = null;
@@ -17,11 +14,8 @@ class Paginator
     protected int $totalItemCount = 0;
     protected int $currentPage = 1;
 
-    public function __construct(PaginatorConfig $paginatorConfig, UrlTool $urlTool, string $requestUri)
+    public function __construct(protected PaginatorConfig $paginatorConfig, protected UrlTool $urlTool, protected string $requestUri)
     {
-        $this->paginatorConfig = $paginatorConfig;
-        $this->urlTool = $urlTool;
-        $this->requestUri = $requestUri;
     }
 
     public function getPageRange(): array
@@ -34,13 +28,12 @@ class Paginator
         return $tab;
     }
 
-    /** @param mixed $val */
-    public function getUrl(string $key, $val): string
+    public function getUrl(string $key, mixed $val): string
     {
         return $this->urlTool->changeRequestQueryString(
             $this->requestUri,
             $this->paginatorConfig->getRequestQueryName($key),
-            $val
+            $val,
         );
     }
 

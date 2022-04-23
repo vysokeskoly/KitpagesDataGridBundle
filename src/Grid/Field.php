@@ -6,7 +6,6 @@ use Kitpages\DataGridBundle\DataGridException;
 
 class Field
 {
-    protected string $fieldName;
     protected string $label;
     protected bool $sortable = false;
     protected bool $filterable = false;
@@ -27,11 +26,10 @@ class Field
     protected array $tagList = [];
 
     public function __construct(
-        string $fieldName,
+        protected string $fieldName,
         array $optionList = [],
-        array $tagList = []
+        array $tagList = [],
     ) {
-        $this->fieldName = $fieldName;
         $this->label = $fieldName;
         foreach ($optionList as $key => $val) {
             if (\in_array($key, [
@@ -162,7 +160,7 @@ class Field
     {
         if (!array_key_exists($key, $this->dataList)) {
             throw new DataGridException(
-                "key [$key] is not defined in the data-list (should be defined in the dataList parameter in the new Field..."
+                "key [$key] is not defined in the data-list (should be defined in the dataList parameter in the new Field...",
             );
         }
 

@@ -21,29 +21,29 @@
     ],
     "homepage": "https://github.com/vysokeskoly/KitpagesDataGridBundle",
     "require": {
-        "php": "^7.4 || ^8.0",
+        "php": "^8.1",
         "ext-pdo": "*",
         "beberlei/assert": "^3.3",
         "doctrine/doctrine-bundle": "^2.5.7",
         "doctrine/orm": "^2.11.2",
-        "symfony/dependency-injection": "^5.0",
-        "symfony/framework-bundle": "^5.0",
-        "symfony/templating": "^5.0",
-        "symfony/translation": "^5.0",
-        "symfony/twig-bundle": "^5.0",
+        "symfony/dependency-injection": "^5.0 || ^6.0",
+        "symfony/framework-bundle": "^5.0 || ^6.0",
+        "symfony/templating": "^5.0 || ^6.0",
+        "symfony/translation": "^5.0 || ^6.0",
+        "symfony/twig-bundle": "^5.0 || ^6.0",
         "twig/twig": "^3.0"
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.24",
-        "lmc/coding-standard": "^3.2",
+        "lmc/coding-standard": "^3.3",
         "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan": "^1.5",
         "phpstan/phpstan-beberlei-assert": "^1.0",
         "phpstan/phpstan-phpunit": "^1.0",
-        "phpunit/phpunit": "^9.5",
-        "symfony/browser-kit": "^5.0",
-        "symfony/finder": "^5.0",
-        "symfony/yaml": "^5.0"
+        "phpunit/phpunit": "^9.5.20",
+        "symfony/browser-kit": "^5.0 || ^6.0",
+        "symfony/finder": "^5.0 || ^6.0",
+        "symfony/yaml": "^5.0 || ^6.0"
     },
     "autoload": {
         "psr-4": {
