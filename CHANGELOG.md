@@ -2,6 +2,7 @@ Changelog
 =========
 
 ## Unreleased
+- Allow php ^8
 
 ## 5.0.0 - 2022-04-23
 - Filter fields in case-insensitive mode

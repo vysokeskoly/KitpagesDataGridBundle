@@ -4,7 +4,7 @@ KitpagesDataGridBundle
 [![Latest Stable Version](https://img.shields.io/packagist/v/vysokeskoly/data-grid-bundle.svg)](https://packagist.org/packages/vysokeskoly/data-grid-bundle)
 [![License](https://img.shields.io/packagist/l/vysokeskoly/data-grid-bundle.svg)](https://packagist.org/packages/vysokeskoly/data-grid-bundle)
 [![PHP - Checks](https://github.com/vysokeskoly/KitpagesDataGridBundle/actions/workflows/php-checks.yaml/badge.svg)](https://github.com/vysokeskoly/KitpagesDataGridBundle/actions/workflows/php-checks.yaml)
-[![Coverage Status](https://coveralls.io/repos/github/MortalFlesh/MFCollectionsPHP/badge.svg?branch=master)](https://coveralls.io/github/MortalFlesh/MFCollectionsPHP?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/vysokeskoly/KitpagesDataGridBundle/badge.svg?branch=master)](https://coveralls.io/github/vysokeskoly/KitpagesDataGridBundle?branch=master)
 
 This Symfony Bundle is a simple datagrid bundle. It aims to be easy to use and extensible.
 
