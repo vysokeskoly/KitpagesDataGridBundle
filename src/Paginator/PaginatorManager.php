@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class PaginatorManager
 {
-    protected EventDispatcherInterface $dispatcher;
     protected array $paginatorParameterList;
     /**
      * @phpstan-var null|callable(PaginatorConfig): PaginatorConfig
@@ -19,14 +18,10 @@ class PaginatorManager
      */
     protected $configurePaginator;
 
-    /**
-     * @param mixed $paginatorParameterList
-     */
     public function __construct(
-        EventDispatcherInterface $dispatcher,
-        $paginatorParameterList
+        protected EventDispatcherInterface $dispatcher,
+        mixed $paginatorParameterList,
     ) {
-        $this->dispatcher = $dispatcher;
         $this->paginatorParameterList = $paginatorParameterList;
     }
 
@@ -58,7 +53,7 @@ class PaginatorManager
                     sprintf(
                         'Configure Paginator function return %s instead of a PaginatorConfig.',
                         gettype($configuredPaginator),
-                    )
+                    ),
                 );
             }
         }
@@ -117,7 +112,7 @@ class PaginatorManager
             $paginator->setTotalPageCount(0);
         } else {
             $paginator->setTotalPageCount(
-                (int) ((($paginator->getTotalItemCount() - 1) / $paginatorConfig->getItemCountInPage()) + 1)
+                (int) ((($paginator->getTotalItemCount() - 1) / $paginatorConfig->getItemCountInPage()) + 1),
             );
         }
 

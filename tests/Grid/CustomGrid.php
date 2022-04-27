@@ -8,21 +8,14 @@ namespace Kitpages\DataGridBundle\Grid;
  */
 class CustomGrid extends Grid
 {
-    /** @var mixed */
-    private $myCustomParamter;
+    private mixed $myCustomParamter;
 
-    /**
-     * @return mixed
-     */
-    public function getMyCustomParamter()
+    public function getMyCustomParamter(): mixed
     {
         return $this->myCustomParamter;
     }
 
-    /**
-     * @param mixed $myCustomParamter
-     */
-    public function setMyCustomParamter($myCustomParamter): void
+    public function setMyCustomParamter(mixed $myCustomParamter): void
     {
         $this->myCustomParamter = $myCustomParamter;
     }

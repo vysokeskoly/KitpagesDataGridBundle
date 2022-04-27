@@ -4,39 +4,25 @@ namespace Kitpages\DataGridBundle\Grid;
 
 class Item
 {
-    /** @var mixed */
-    protected $entity;
-    /** @var mixed */
-    protected $row;
+    protected mixed $entity;
+    protected mixed $row;
 
-    /**
-     * @param mixed $entity
-     */
-    public function setEntity($entity): void
+    public function setEntity(mixed $entity): void
     {
         $this->entity = $entity;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getEntity()
+    public function getEntity(): mixed
     {
         return $this->entity;
     }
 
-    /**
-     * @param mixed $row
-     */
-    public function setRow($row): void
+    public function setRow(mixed $row): void
     {
         $this->row = $row;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getRow()
+    public function getRow(): mixed
     {
         return $this->row;
     }

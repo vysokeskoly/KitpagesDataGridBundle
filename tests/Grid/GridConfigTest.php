@@ -14,7 +14,7 @@ class GridConfigTest extends TestCase
     {
         $this->gridConfig = new GridConfig(
             $this->createMock(QueryBuilder::class),
-            'node.id'
+            'node.id',
         );
 
         parent::setUp();
@@ -40,30 +40,39 @@ class GridConfigTest extends TestCase
         $this->assertEquals($fieldName, $this->gridConfig->getFieldByName($fieldName)->getLabel());
     }
 
-    public function testAddFieldWrongArgumentType(): void
+    public function testCanAddAndRetrieveSingleFieldNewSyntaxWithFieldOption(): void
     {
-        $arguments = [true, 1, 2.2, [], new \stdClass(), null, function (): void { }];
+        $fieldName = uniqid('', true);
+        $this->gridConfig->addField($fieldName, [
+            FieldOption::Label->value => $fieldName,
+        ]);
 
-        foreach ($arguments as $argument) {
-            try {
-                $this->gridConfig->addField($argument);
-                $this->fail();
-            } catch (\InvalidArgumentException $e) {
-                $this->assertTrue(true);
-            }
-        }
+        $this->assertInstanceOf(Field::class, $this->gridConfig->getFieldByName($fieldName));
+        $this->assertEquals($fieldName, $this->gridConfig->getFieldByName($fieldName)->getLabel());
+    }
+
+    public function testShouldNotAddFieldWithOptions(): void
+    {
+        $fieldName = uniqid('', true);
+        $field = new Field($fieldName, ['label' => $fieldName]);
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->gridConfig->addField($field, [
+            'label' => $fieldName,
+        ]);
     }
 
     public function testTags(): void
     {
         $this->gridConfig->addField(
-            new Field('f1', [], ['foo', 'bar'])
+            new Field('f1', [], ['foo', 'bar']),
         );
         $this->gridConfig->addField(
-            new Field('f2', [], ['bar'])
+            new Field('f2', [], ['bar']),
         );
         $this->gridConfig->addField(
-            new Field('f3', [], ['foo', 'bar', 'biz'])
+            new Field('f3', [], ['foo', 'bar', 'biz']),
         );
         $this->assertCount(1, $this->gridConfig->getFieldListByTag('biz'));
         $this->assertCount(2, $this->gridConfig->getFieldListByTag('foo'));

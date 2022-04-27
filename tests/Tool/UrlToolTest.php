@@ -14,7 +14,7 @@ class UrlToolTest extends TestCase
         $newUrl = $urlTool->changeRequestQueryString(
             $url,
             'key1',
-            'test'
+            'test',
         );
         $this->assertEquals('/titi?key1=test&key2=val2', $newUrl);
 
@@ -23,14 +23,14 @@ class UrlToolTest extends TestCase
             [
                 'key1' => 'test1',
                 'key2' => 'test2',
-            ]
+            ],
         );
         $this->assertEquals('/titi?key1=test1&key2=test2', $newUrl);
 
         $newUrl = $urlTool->changeRequestQueryString(
             $url,
             'key3',
-            'val3'
+            'val3',
         );
         $this->assertEquals('/titi?key1=val1&key2=val2&key3=val3', $newUrl);
     }
@@ -42,13 +42,13 @@ class UrlToolTest extends TestCase
         $newUrl = $urlTool->changeRequestQueryString(
             $url,
             'key1',
-            'fös'
+            'fös',
         );
         $this->assertEquals('/titi?key1=f%C3%B6s&key2=val2', $newUrl);
         $newUrl = $urlTool->changeRequestQueryString(
             $newUrl,
             'key3',
-            'mystring=-+ glou'
+            'mystring=-+ glou',
         );
         $this->assertEquals('/titi?key1=f%C3%B6s&key2=val2&key3=mystring%3D-%2B+glou', $newUrl);
     }
@@ -61,14 +61,14 @@ class UrlToolTest extends TestCase
         $newUrl = $urlTool->changeRequestQueryString(
             $url,
             'key2',
-            'glou'
+            'glou',
         );
         $this->assertEquals('/titi?tab%5B0%5D=val_tab1&tab%5B1%5D=val_tab2&key2=glou', $newUrl);
 
         $newUrl = $urlTool->changeRequestQueryString(
             $url,
             'tab',
-            ['newval1', 'newval2', 'newval3']
+            ['newval1', 'newval2', 'newval3'],
         );
         $this->assertEquals('/titi?tab%5B0%5D=newval1&tab%5B1%5D=newval2&tab%5B2%5D=newval3&key2=val2', $newUrl);
 
@@ -77,14 +77,14 @@ class UrlToolTest extends TestCase
         $newUrl = $urlTool->changeRequestQueryString(
             $url,
             'key2',
-            'glou'
+            'glou',
         );
         $this->assertEquals('/titi?tab%5Bfield1%5D=val_tab1&tab%5Bfield2%5D=val_tab2&key2=glou', $newUrl);
 
         $newUrl = $urlTool->changeRequestQueryString(
             $url,
             'tab',
-            ['field1' => 'newval1', 'field2' => 'newval2', 'newfield' => 'newval']
+            ['field1' => 'newval1', 'field2' => 'newval2', 'newfield' => 'newval'],
         );
         $this->assertEquals('/titi?tab%5Bfield1%5D=newval1&tab%5Bfield2%5D=newval2&tab%5Bnewfield%5D=newval&key2=val2', $newUrl);
     }

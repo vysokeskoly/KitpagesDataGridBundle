@@ -6,7 +6,6 @@ use Kitpages\DataGridBundle\DataGridException;
 
 class Field
 {
-    protected string $fieldName;
     protected string $label;
     protected bool $sortable = false;
     protected bool $filterable = false;
@@ -26,27 +25,23 @@ class Field
      */
     protected array $tagList = [];
 
+    /**
+     * @see FieldOption
+     * Field option usage:
+     * - currently it must be used by a ->value since Enum can not be used as a array key (yet?)
+     *
+     * new Field('name', [FieldOption::Label->value => 'label'])
+     *
+     * @phpstan-param array<string, mixed> $optionList
+     */
     public function __construct(
-        string $fieldName,
+        protected string $fieldName,
         array $optionList = [],
-        array $tagList = []
+        array $tagList = [],
     ) {
-        $this->fieldName = $fieldName;
         $this->label = $fieldName;
         foreach ($optionList as $key => $val) {
-            if (\in_array($key, [
-                'label',
-                'sortable',
-                'filterable',
-                'visible',
-                'formatValueCallback',
-                'autoEscape',
-                'translatable',
-                'category',
-                'nullIfNotExists',
-                'dataList',
-                'uniqueId',
-            ], true)) {
+            if (FieldOption::tryFrom($key) !== null && property_exists($this, $key)) {
                 $this->$key = $val;
             } else {
                 throw new \InvalidArgumentException("key $key doesn't exist in option list");
@@ -162,7 +157,7 @@ class Field
     {
         if (!array_key_exists($key, $this->dataList)) {
             throw new DataGridException(
-                "key [$key] is not defined in the data-list (should be defined in the dataList parameter in the new Field..."
+                "key [$key] is not defined in the data-list (should be defined in the dataList parameter in the new Field...",
             );
         }
 

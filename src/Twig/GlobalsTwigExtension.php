@@ -7,15 +7,10 @@ use Twig\Extension\GlobalsInterface;
 
 class GlobalsTwigExtension extends AbstractExtension implements GlobalsInterface
 {
-    protected array $gridParameterList;
-    protected array $paginatorParameterList;
-
     public function __construct(
-        array $gridParameterList,
-        array $paginatorParameterList
+        protected array $gridParameterList,
+        protected array $paginatorParameterList,
     ) {
-        $this->gridParameterList = $gridParameterList;
-        $this->paginatorParameterList = $paginatorParameterList;
     }
 
     public function getGlobals(): array

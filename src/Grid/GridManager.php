@@ -22,23 +22,14 @@ use Symfony\Component\HttpFoundation\Request;
 
 class GridManager
 {
-    protected EventDispatcherInterface $dispatcher;
-    protected PaginatorManager $paginatorManager;
-    protected NormalizerInterface $itemListNormalizer;
     protected string $hydratorClass;
 
-    /**
-     * @param mixed $hydratorClass
-     */
     public function __construct(
-        EventDispatcherInterface $dispatcher,
-        PaginatorManager $paginatorManager,
-        NormalizerInterface $itemListNormalizer,
-        $hydratorClass
+        protected EventDispatcherInterface $dispatcher,
+        protected PaginatorManager $paginatorManager,
+        protected NormalizerInterface $itemListNormalizer,
+        mixed $hydratorClass,
     ) {
-        $this->dispatcher = $dispatcher;
-        $this->paginatorManager = $paginatorManager;
-        $this->itemListNormalizer = $itemListNormalizer;
         $this->hydratorClass = $hydratorClass;
     }
 
@@ -54,7 +45,7 @@ class GridManager
     public function getGrid(
         GridConfig $gridConfig,
         Request $request,
-        Grid $grid = null
+        Grid $grid = null,
     ): Grid {
         $queryBuilder = $gridConfig->getQueryBuilder();
 
@@ -64,7 +55,7 @@ class GridManager
                 new UrlTool(),
                 $request->getRequestUri(),
                 $this->dispatcher,
-                $gridConfig
+                $gridConfig,
             );
         } else {
             $grid->setGridConfig($gridConfig);
@@ -132,11 +123,11 @@ class GridManager
             ? $this->itemListNormalizer->normalize(
                 $event->get('query'),
                 $event->get('gridQueryBuilder'),
-                $this->hydratorClass
+                $this->hydratorClass,
             )
             : $this->itemListNormalizer->normalize(
                 $event->get('query'),
-                $event->get('gridQueryBuilder')
+                $event->get('gridQueryBuilder'),
             );
 
         // end normalization
@@ -145,8 +136,7 @@ class GridManager
         return $grid;
     }
 
-    /** @param mixed $filter */
-    protected function applyFilter(QueryBuilder $queryBuilder, Grid $grid, $filter): void
+    protected function applyFilter(QueryBuilder $queryBuilder, Grid $grid, mixed $filter): void
     {
         if (!$filter) {
             return;
@@ -175,12 +165,11 @@ class GridManager
         $this->dispatcher->dispatch(new AfterApplyFilter($event));
     }
 
-    /** @param mixed $selectorValue */
     protected function applySelector(
         QueryBuilder $queryBuilder,
         Grid $grid,
         string $selectorField,
-        $selectorValue
+        mixed $selectorValue,
     ): void {
         if (empty($selectorField)) {
             return;
@@ -206,7 +195,7 @@ class GridManager
         QueryBuilder $gridQueryBuilder,
         Grid $grid,
         string $sortField,
-        string $sortOrder
+        string $sortOrder,
     ): void {
         if (empty($sortField)) {
             return;

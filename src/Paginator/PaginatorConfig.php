@@ -7,15 +7,11 @@ use Doctrine\ORM\QueryBuilder;
 class PaginatorConfig
 {
     protected string $name = 'paginator';
-    protected QueryBuilder $queryBuilder;
-    protected string $countFieldName;
     protected ?int $itemCountInPage = null;
     protected ?int $visiblePageCountInPaginator = null;
 
-    public function __construct(QueryBuilder $queryBuilder, string $countFieldName)
+    public function __construct(protected QueryBuilder $queryBuilder, protected string $countFieldName)
     {
-        $this->queryBuilder = $queryBuilder;
-        $this->countFieldName = $countFieldName;
     }
 
     public function getRequestQueryName(string $key): string
