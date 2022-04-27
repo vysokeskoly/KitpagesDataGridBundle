@@ -28,14 +28,20 @@ class GridConfig
     }
 
     /**
-     * @param string[] $options list of tags
+     * @see FieldOption
+     * Field option usage:
+     * - currently it must be used by a ->value since Enum can not be used as a array key (yet?)
      *
-     * @return GridConfig Fluent interface
+     * ->addField('name', [FieldOption::Label->value => 'label'])
+     *
+     * @phpstan-param array<string, mixed> $options
      */
     public function addField(Field|string $field, array $options = [], mixed $tagList = []): self
     {
         if (\is_string($field)) {
             $field = new Field($field, $options, $tagList);
+        } elseif (!empty($options) || !empty($tagList)) {
+            throw new \InvalidArgumentException('Options and tags are only supported for field set by string.');
         }
 
         $this->fieldList[] = $field;

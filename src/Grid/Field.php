@@ -25,6 +25,15 @@ class Field
      */
     protected array $tagList = [];
 
+    /**
+     * @see FieldOption
+     * Field option usage:
+     * - currently it must be used by a ->value since Enum can not be used as a array key (yet?)
+     *
+     * new Field('name', [FieldOption::Label->value => 'label'])
+     *
+     * @phpstan-param array<string, mixed> $optionList
+     */
     public function __construct(
         protected string $fieldName,
         array $optionList = [],
@@ -32,19 +41,7 @@ class Field
     ) {
         $this->label = $fieldName;
         foreach ($optionList as $key => $val) {
-            if (\in_array($key, [
-                'label',
-                'sortable',
-                'filterable',
-                'visible',
-                'formatValueCallback',
-                'autoEscape',
-                'translatable',
-                'category',
-                'nullIfNotExists',
-                'dataList',
-                'uniqueId',
-            ], true)) {
+            if (FieldOption::tryFrom($key) !== null && property_exists($this, $key)) {
                 $this->$key = $val;
             } else {
                 throw new \InvalidArgumentException("key $key doesn't exist in option list");

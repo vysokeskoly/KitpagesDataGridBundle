@@ -37,6 +37,37 @@ class FieldTest extends TestCase
         $this->assertFalse($field->getNullIfNotExists());
     }
 
+    public function testConstructorWithEnums(): void
+    {
+        $field = new Field('id');
+        $this->assertEquals($field->getFieldName(), 'id');
+
+        $field = new Field('phone', [
+            FieldOption::Label->value => 'Phone',
+            FieldOption::Sortable->value => true,
+            FieldOption::Filterable->value => true,
+            FieldOption::Visible->value => false,
+            FieldOption::FormatValueCallback->value => function ($value) {
+                return mb_strtoupper($value);
+            },
+            FieldOption::AutoEscape->value => true,
+            FieldOption::Translatable->value => true,
+            FieldOption::Category->value => 'my.category',
+            FieldOption::NullIfNotExists->value => true,
+        ]);
+        $this->assertEquals('Phone', $field->getLabel());
+        $this->assertTrue($field->getSortable());
+        $this->assertTrue($field->getFilterable());
+        $this->assertFalse($field->getVisible());
+        $this->assertNotNull($field->getFormatValueCallback());
+        $this->assertTrue($field->getFilterable());
+        $this->assertEquals('my.category', $field->getCategory());
+        $this->assertTrue($field->getNullIfNotExists());
+
+        $field = new Field('test');
+        $this->assertFalse($field->getNullIfNotExists());
+    }
+
     public function testWrongParameterConstructor(): void
     {
         try {

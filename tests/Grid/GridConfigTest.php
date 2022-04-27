@@ -40,6 +40,29 @@ class GridConfigTest extends TestCase
         $this->assertEquals($fieldName, $this->gridConfig->getFieldByName($fieldName)->getLabel());
     }
 
+    public function testCanAddAndRetrieveSingleFieldNewSyntaxWithFieldOption(): void
+    {
+        $fieldName = uniqid('', true);
+        $this->gridConfig->addField($fieldName, [
+            FieldOption::Label->value => $fieldName,
+        ]);
+
+        $this->assertInstanceOf(Field::class, $this->gridConfig->getFieldByName($fieldName));
+        $this->assertEquals($fieldName, $this->gridConfig->getFieldByName($fieldName)->getLabel());
+    }
+
+    public function testShouldNotAddFieldWithOptions(): void
+    {
+        $fieldName = uniqid('', true);
+        $field = new Field($fieldName, ['label' => $fieldName]);
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->gridConfig->addField($field, [
+            'label' => $fieldName,
+        ]);
+    }
+
     public function testTags(): void
     {
         $this->gridConfig->addField(
